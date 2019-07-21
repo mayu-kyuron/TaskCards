@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:b="clr-namespace:TaskCards.Behaviors"
+             x:Class="TaskCards.Pages.InputPage"
+             Style="{StaticResource ContentPage}"
+             Padding="{StaticResource ContentPagePadding}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <x:String x:Key="RepeatText" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <AbsoluteLayout Style="{StaticResource DialogBaseAbsoluteLayout}">
+
+        <ScrollView Style="{StaticResource DialogBaseScrollView}">
+            <Grid x:Name="layoutBase" Style="{StaticResource DialogBaseGrid}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="60*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Style="{StaticResource InputConfirmBaseGrid}">
+
+                    <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                        <Image
+                            x:Name="imgBackButton"
+                            Style="{StaticResource BackButtonImage}"/>
+                        <Label
+                            x:Name="lblTopDate"
+                            Style="{StaticResource TopDateLabel}"/>
+                        <Image
+                            x:Name="imgTopRightButton"
+                            Style="{StaticResource TopRightButtonImage}"/>
+                    </Grid>
+
+                    <Entry
+                        Grid.Row="1"
+                        Style="{StaticResource InputConfirmTitleEntry}"
+                        Placeholder="{StaticResource title}"/>
+
+                    <Grid x:Name="gdTime" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
+                        <BoxView
+                            Grid.Column="0"
+                            Style="{StaticResource InputTimeBoxView}"/>
+                        <TimePicker
+                            Style="{StaticResource InputStartTimePicker}"/>
+                        <BoxView
+                            Grid.Column="7"
+                            Style="{StaticResource InputTimeBoxView}"/>
+                        <Image
+                            Style="{StaticResource InputTimeArrowImage}"/>
+                        <BoxView
+                            Grid.Column="14"
+                            Style="{StaticResource InputTimeBoxView}"/>
+                        <TimePicker
+                            Style="{StaticResource InputEndTimePicker}"/>
+                        <BoxView
+                            Grid.Column="21"
+                            Style="{StaticResource InputTimeBoxView}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="3" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Grid.Column="0"
+                            Grid.ColumnSpan="5"
+                            Style="{StaticResource InputConfirmLabel}"
+                            Text="{StaticResource allDay}"/>
+                        <Switch
+                            x:Name="swAllDay"
+                            Grid.Column="5"
+                            Toggled="OnToggleAllDay"/>
+                    </Grid>
+
+                    <!--
+                    <Grid x:Name="gdProject" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Style="{StaticResource InputConfirmLeftLabel}"
+                            Text="{Binding ProjectText}"/>
+                        <Image
+                            Style="{StaticResource InputConfirmRightImage}"
+                            Source="{Binding InputConfirmArrowIconSource}"/>
+                    </Grid>
+
+                    <ScrollView x:Name="svMember" Grid.Row="5" Grid.RowSpan="3">
+                        <Grid x:Name="ltMember" Style="{StaticResource NoSpacingFullGrid}" HeightRequest="{Binding MemberHeight}">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                                <Label
+                                    Style="{StaticResource InputMemberNameLabel}"
+                                    Text="{Binding Member1Text}"/>
+                                <Label
+                                    Style="{StaticResource InputMemberEditLabel}"
+                                    Text="{StaticResource edit}"/>
+                                <Switch
+                                    x:Name="swMemberEdit1"
+                                    Style="{StaticResource InputMemberSwitch}"/>
+                                <Image
+                                    x:Name="imgMemberCancel1"
+                                    Style="{StaticResource InputMemberCancelImage}"/>
+                            </Grid>
+                            
+                        </Grid>
+                    </ScrollView>
+
+                    <Grid x:Name="gdAddMember" Grid.Row="8" Style="{StaticResource NoSpacingFullGrid}">
+                        <Image
+                            Style="{StaticResource InputConfirmAddImage}"/>
+                        <BoxView
+                            Style="{StaticResource InputConfirmAddBoxView}"/>
+                        <Label 
+                            Style="{StaticResource InputConfirmAddLabel}"/>
+                    </Grid>
+                    -->
+
+                    <Grid Grid.Row="4" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Style="{StaticResource InputConfirmSmallTitleLabel}"
+                            Text="{StaticResource notes}"/>
+                        <Editor
+                            Grid.Row="2"
+                            Grid.RowSpan="9"
+                            Style="{StaticResource InputConfirmEditor}"
+                            Text="{Binding NotesText}"/>
+                    </Grid>
+                    
+                    <Grid x:Name="gdRepeat" Grid.Row="7" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Style="{StaticResource InputConfirmLeftLabel}"
+                            Text="{DynamicResource RepeatText}"/>
+                        <Image
+                            x:Name="imgRepeat"
+                            Style="{StaticResource InputConfirmRightImage}"
+                            Source="{Binding InputConfirmCancelIconSource}"/>
+                    </Grid>
+
+                    <Entry
+                        Grid.Row="8"
+                        Style="{StaticResource InputConfirmEntry}"
+                        Text="{Binding PlaceText}"
+                        Placeholder="{StaticResource place}"/>
+
+                    <BoxView
+                        Grid.Row="9"
+                        Grid.RowSpan="5"/>
+
+                </Grid>
+
+            </Grid>
+        </ScrollView>
+
+        <ContentView x:Name="cvDialogBack" Style="{StaticResource DialogBackContentView}">
+            <Grid x:Name="gdDialogBack" Style="{StaticResource NoSpacingFullGrid}">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="gdDialogFront" Style="{StaticResource DialogFrontGrid}">
+
+                    <ListView x:Name="lstRepeat" ItemsSource="{Binding RepeatItems}">
+                        <ListView.Behaviors>
+                            <b:SelectedItemBehavior Command="{Binding SelectedRepeatCommand}"/>
+                        </ListView.Behaviors>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid Style="{StaticResource SelectDialogItemGrid}">
+                                        <BoxView Grid.Column="0" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="28"
+                                            Style="{StaticResource SelectDialogItemLabel}" />
+                                        <BoxView Grid.Column="29" />
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                </Grid>
+
+            </Grid>
+        </ContentView>
+
+    </AbsoluteLayout>
+
+</ContentPage>

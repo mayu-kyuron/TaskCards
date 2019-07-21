@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<appSettings>
+
+		<!-- for product and development server -->
+		<add key="learning_server_root_url" value="https://www.wazalog.net/" />
+		<!--<add key="learning_server_root_url" value="https://www.proassist-survey.com/" />-->
+		<add key="learning_server_installer_dir_url" value="https://learning.proassist.jp/DL/" />
+
+		<!-- API Path -->
+		<!-- for release -->
+		<!-- <add key="learning_api_server_name" value="SkillLog.WebAPI" />-->
+		<!-- for develop -->
+		<add key="learning_api_server_name" value="SkillLog.WebAPI.ST" />
+		<add key="learning_server_login" value="Login" />
+		<add key="learning_server_category_contents" value="CategoryContents" />
+		<add key="learning_server_member_register" value="MemberRegister" />
+		<add key="learning_server_file_data" value="SkillLogFileData" />
+		<add key="learning_server_file" value="api/SkillLogFile" />
+		<add key="learning_server_file_upload_contents" value="UploadContents" />
+		<add key="learning_server_access_log" value="SmartphoneAccessLog" />
+		<add key="learning_server_advertisement_information" value="AdvertisementInformation" />
+		<add key="learning_server_terminal_information" value="TerminalInformation" />
+
+		<!-- Folder Path -->
+		<add key="image_folder_path" value="TaskCards.Images." />
+		<add key="download_sub_folder_path" value="Download/skilllog" />
+
+		<!-- DB File -->
+		<add key="db_file_name" value="XamarinSkillLog.db" />
+
+		<!-- J社動画メタ情報取得APIのURL -->
+		<add key="jstream_get_meta_api_url" value="https://api01-platform.stream.co.jp/apiservice/getMediaByParam/?token=MERCNDY3MkEzNUE0MUI1NjEwMTI5N0NEOTA1QTVFREU=" />
+
+		<!-- YoutubeのoEmbedAPIのURL -->
+		<add key="youtube_oembed_api_url" value="https://noembed.com/embed?url=https://www.youtube.com/watch?v=" />
+		
+		<!-- Email -->
+		<add key="contact_us_email" value="wazalog@takenobe.co.jp" />
+
+		<!-- ベトナム語申込みURL -->
+		<add key="vietnam_url" value="http://www.paintnavi.co.jp/kmunited/paid_member/" />
+
+	</appSettings>
+</configuration>

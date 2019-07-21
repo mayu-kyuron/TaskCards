@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			xmlns:page="clr-namespace:TaskCards.Pages"
+            x:Class="TaskCards.Pages.DetailPage">
+
+	<TabbedPage.Children>
+        <NavigationPage Title="{StaticResource calendar}" Icon="calendar">
+            <x:Arguments>
+                <page:CalendarPage/>
+            </x:Arguments>
+        </NavigationPage>
+        <!--
+        <NavigationPage Title="{StaticResource task}">
+            <x:Arguments>
+                <page:TaskPage/>
+            </x:Arguments>
+        </NavigationPage>
+        -->
+    </TabbedPage.Children>
+
+</TabbedPage>

@@ -1,0 +1,14 @@
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\bin\Debug\netstandard2.0\TaskCards.deps.json
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\bin\Debug\netstandard2.0\TaskCards.dll
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\bin\Debug\netstandard2.0\TaskCards.pdb
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.csprojAssemblyReference.cache
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.csproj.CoreCompileInputs.cache
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.App.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.CalendarPage.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.DetailPage.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.TaskPage.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.AssemblyInfoInputs.cache
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.AssemblyInfo.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.dll
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.pdb
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.InputPage.xaml.g.cs

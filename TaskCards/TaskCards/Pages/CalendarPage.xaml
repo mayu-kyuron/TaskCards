@@ -1,0 +1,249 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskCards.Pages.CalendarPage"
+             xmlns:controls="clr-namespace:XamForms.Controls;assembly=XamForms.Controls.Calendar"
+             Style="{StaticResource ContentPage}"
+             Padding="{StaticResource ContentPagePadding}">
+
+    <AbsoluteLayout Style="{StaticResource DialogBaseAbsoluteLayout}">
+
+        <Grid x:Name="layoutBase" Style="{StaticResource DialogBaseGrid}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*" />
+                <RowDefinition Height="70*" />
+            </Grid.RowDefinitions>
+
+            <controls:Calendar
+                x:Name="calenderBase"
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Padding="0,0,0,0"
+                TitleLabelTextColor="Black"
+                TitleLeftArrowImage="{Binding LeftArrowSource}"
+                TitleRightArrowImage="{Binding RightArrowSource}"
+                StartDay="Sunday"
+                SelectedBorderColor="Blue"
+                SelectedBorderWidth="2"
+                TitleLabelFormat="yyyy年MM月"
+                DateClicked="OnClickDate"
+                RightArrowClicked="OnClickRightArrow" />
+
+            <Grid x:Name="gdSchedulesAndTasks" Style="{StaticResource NoSpacingFullGrid}" Grid.Row="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+            </Grid>
+
+        </Grid>
+
+        <ContentView x:Name="cvDialogBack" Style="{StaticResource DialogBackContentView}">
+            <Grid Style="{StaticResource NoSpacingFullGrid}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="gdDialogFront" Style="{StaticResource DialogFrontGrid}">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="3*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Style="{StaticResource DateTappedDialogMainGrid}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Label
+                            x:Name="lblDate"
+                            Grid.Column="1"
+                            Text="{Binding DateText}"
+                            VerticalTextAlignment="Center"
+                            FontSize="Medium"
+                            TextColor="Black"/>
+
+                    </Grid>
+
+                    <Grid Grid.Row="1" Style="{StaticResource DateTappedDialogMainGrid}">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="15*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Style="{StaticResource DateTappedDialogMarginGrid}">
+                        
+                            <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                                <Label
+                                    Style="{StaticResource DateTappedDialogSubTitleLabel}"
+                                    Text="{StaticResource schedule}" />
+                                <Image
+                                    x:Name="imgAddSchedule"
+                                    Style="{StaticResource DateTappedDialogAddImage}" />
+                            </Grid>
+
+                            <Label
+                                x:Name="lblScheduleTime1"
+                                Grid.Row="1"
+                                Style="{StaticResource DateTappedDialogTimeLabel}"
+                                Text="{Binding ScheduleTime1Text}"/>
+
+                            <Grid x:Name="gdScheduleTitle1" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
+                                    BackgroundColor="{Binding ScheduleTitle1Color}" />
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
+                                <Label
+                                    Style="{StaticResource DateTappedDialogTitleLabel}"
+                                    Text="{Binding ScheduleTitle1Text}"/>
+                                <Image
+                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
+                            </Grid>
+
+                            <Label
+                                x:Name="lblScheduleTime2"
+                                Grid.Row="3"
+                                Style="{StaticResource DateTappedDialogTimeLabel}"
+                                Text="{Binding ScheduleTime2Text}"/>
+
+                            <Grid x:Name="gdScheduleTitle2" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
+                                    BackgroundColor="{Binding ScheduleTitle2Color}" />
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
+                                <Label
+                                    Style="{StaticResource DateTappedDialogTitleLabel}"
+                                    Text="{Binding ScheduleTitle2Text}"/>
+                                <Image
+                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
+                            </Grid>
+
+                        </Grid>
+
+                    </Grid>
+
+                    <Grid Grid.Row="2" Style="{StaticResource DateTappedDialogMainGrid}">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="15*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Style="{StaticResource DateTappedDialogMarginGrid}">
+
+                            <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                                <Label
+                                    Style="{StaticResource DateTappedDialogSubTitleLabel}"
+                                    Text="{StaticResource task}" />
+                                <Image
+                                    x:Name="imgAddTask"
+                                    Style="{StaticResource DateTappedDialogAddImage}" />
+                            </Grid>
+
+                            <Label
+                                x:Name="lblTaskTime1"
+                                Grid.Row="1"
+                                Style="{StaticResource DateTappedDialogTimeLabel}"
+                                Text="{Binding TaskTime1Text}"/>
+
+                            <Grid x:Name="gdTaskTitle1" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
+                                    BackgroundColor="{Binding TaskTitle1Color}" />
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
+                                <Label
+                                    Style="{StaticResource DateTappedDialogTitleLabel}"
+                                    Text="{Binding TaskTitle1Text}"/>
+                                <Image
+                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
+                            </Grid>
+
+                            <Label
+                                x:Name="lblTaskTime2"
+                                Grid.Row="3"
+                                Style="{StaticResource DateTappedDialogTimeLabel}"
+                                Text="{Binding TaskTime2Text}"/>
+
+                            <Grid x:Name="gdTaskTitle2" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
+                                    BackgroundColor="{Binding TaskTitle2Color}" />
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
+                                <Label
+                                    Style="{StaticResource DateTappedDialogTitleLabel}"
+                                    Text="{Binding TaskTitle2Text}"/>
+                                <Image
+                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
+                                <BoxView
+                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
+                            </Grid>
+
+                        </Grid>
+
+                    </Grid>
+
+                </Grid>
+                
+            </Grid>
+        </ContentView>
+
+    </AbsoluteLayout>
+
+</ContentPage>

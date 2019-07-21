@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TaskCards.App">
+    <Application.Resources>
+
+		<ResourceDictionary>
+
+            <!-- プラットフォームごとのスタイル -->
+
+            <OnPlatform  x:Key="ContentPagePadding" x:TypeArguments="Thickness" iOS="0,20,0,0" />
+
+            <!-- スタイル -->
+
+            <Style x:Key="ContentPage" TargetType="{x:Type ContentPage}">
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+
+            <Style x:Key="NoSpacingFullGrid" TargetType="{x:Type Grid}">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+                <Setter Property="ColumnSpacing" Value="0" />
+                <Setter Property="RowSpacing" Value="0" />
+            </Style>
+
+            <Style x:Key="VerticalStackLayout" TargetType="{x:Type StackLayout}">
+                <Setter Property="Spacing" Value="0" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+            </Style>
+            
+            <Style x:Key="FullyHorizontalStackLayout" TargetType="{x:Type StackLayout}">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="Orientation" Value="Horizontal" />
+            </Style>
+
+            <Style x:Key="DialogBaseAbsoluteLayout" TargetType="{x:Type AbsoluteLayout}">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+            </Style>
+
+            <Style x:Key="DialogBaseScrollView" TargetType="{x:Type ScrollView}">
+                <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0, 1, 1" />
+                <Setter Property="AbsoluteLayout.LayoutFlags" Value="All" />
+            </Style>
+
+            <Style x:Key="DialogBaseGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="HeightRequest" Value="{Binding DialogBaseHeight}" />
+                <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0, 1, 1" />
+                <Setter Property="AbsoluteLayout.LayoutFlags" Value="All" />
+            </Style>
+
+            <Style x:Key="DialogBackContentView" TargetType="{x:Type ContentView}">
+                <Setter Property="BackgroundColor" Value="#C0808080" />
+                <Setter Property="Padding" Value="0, 0" />
+                <Setter Property="IsVisible" Value="False" />
+                <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0, 1, 1" />
+                <Setter Property="AbsoluteLayout.LayoutFlags" Value="All" />
+            </Style>
+
+            <Style x:Key="DialogFrontGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="Grid.Row" Value="1" />
+                <Setter Property="Grid.Column" Value="1" />
+                <Setter Property="RowSpacing" Value="1" />
+                <Setter Property="BackgroundColor" Value="Black" />
+            </Style>
+
+            <Style x:Key="FullyJustifyingLabel" TargetType="{x:Type Label}">
+                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
+            </Style>
+
+            <Style x:Key="InputConfirmBaseGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="Grid.Row" Value="1" />
+                <Setter Property="Grid.Column" Value="1" />
+            </Style>
+            
+            <Style x:Key="BackButtonImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Source" Value="{Binding BackButtonSource}" />
+                <Setter Property="Aspect" Value="Fill" />
+            </Style>
+
+            <Style x:Key="SelectDialogItemGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+            
+            <Style x:Key="SelectDialogItemLabel" TargetType="{x:Type Label}">
+                <Setter Property="Text" Value="{Binding Name}" />
+                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="TopDateLabel" TargetType="{x:Type Label}">
+                <Setter Property="Grid.Column" Value="1" />
+                <Setter Property="Grid.ColumnSpan" Value="5" />
+                <Setter Property="Text" Value="{Binding TopDateText}" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="TopRightButtonImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="6" />
+                <Setter Property="Source" Value="{Binding TopRightButtonSource}" />
+                <Setter Property="Aspect" Value="Fill" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogMainGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogMarginGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="Grid.Row" Value="1" />
+                <Setter Property="Grid.Column" Value="1" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogSubTitleLabel" TargetType="{x:Type Label}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Grid.ColumnSpan" Value="6" />
+                <Setter Property="TextColor" Value="#08088A" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogAddImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="6" />
+                <Setter Property="Source" Value="{Binding AddSource}" />
+                <Setter Property="Aspect" Value="Fill" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTimeLabel" TargetType="{x:Type Label}">
+                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTitleBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="1" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTitleMiddleBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="2" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTitleLabel" TargetType="{x:Type Label}">
+                <Setter Property="Grid.Column" Value="3" />
+                <Setter Property="Grid.ColumnSpan" Value="23" />
+                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTitleImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="26" />
+                <Setter Property="Grid.ColumnSpan" Value="5" />
+                <Setter Property="IsVisible" Value="False" />
+                <Setter Property="Source" Value="{Binding DateTappedDialogTitleIconSource}" />
+                <Setter Property="Aspect" Value="Fill" />
+            </Style>
+
+            <Style x:Key="DateTappedDialogTitleRightBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="31" />
+            </Style>
+
+            <Style x:Key="InputConfirmLabel" TargetType="{x:Type Label}">
+                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Medium" />
+            </Style>
+
+            <Style x:Key="InputConfirmSmallTitleLabel" TargetType="{x:Type Label}">
+                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="VerticalTextAlignment" Value="End" />
+                <Setter Property="FontSize" Value="Small" />
+            </Style>
+
+            <Style x:Key="InputConfirmEntry" TargetType="{x:Type Entry}">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="PlaceholderColor" Value="Silver" />
+            </Style>
+
+            <Style x:Key="InputConfirmEditor" TargetType="{x:Type Editor}">
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+
+            <Style x:Key="InputConfirmTitleEntry" TargetType="{x:Type Entry}" BasedOn="{StaticResource InputConfirmEntry}">
+                <Setter Property="Text" Value="{Binding Path=TitleText}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="InputConfirmDateTimeArrowImage" TargetType="{x:Type Image}">
+                <Setter Property="Source" Value="{Binding InputConfirmDateTimeArrowSource}" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+
+            <Style x:Key="InputTimeBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.ColumnSpan" Value="3" />
+            </Style>
+            
+            <Style x:Key="InputTimePicker" TargetType="{x:Type TimePicker}">
+                <Setter Property="Grid.ColumnSpan" Value="4" />
+                <Setter Property="Format" Value="HH:mm" />
+            </Style>
+
+            <Style x:Key="InputStartTimePicker" TargetType="{x:Type TimePicker}" BasedOn="{StaticResource InputTimePicker}">
+                <Setter Property="Grid.Column" Value="3" />
+                <Setter Property="Time" Value="{Binding StartTime}" />
+            </Style>
+
+            <Style x:Key="InputTimeArrowImage" TargetType="{x:Type Image}" BasedOn="{StaticResource InputConfirmDateTimeArrowImage}">
+                <Setter Property="Grid.Column" Value="10" />
+                <Setter Property="Grid.ColumnSpan" Value="4" />
+            </Style>
+
+            <Style x:Key="InputEndTimePicker" TargetType="{x:Type TimePicker}" BasedOn="{StaticResource InputTimePicker}">
+                <Setter Property="Grid.Column" Value="17" />
+                <Setter Property="Time" Value="{Binding EndTime}" />
+            </Style>
+
+            <Style x:Key="InputMemberNameLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Grid.ColumnSpan" Value="11" />
+            </Style>
+
+            <Style x:Key="InputMemberEditLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.Column" Value="11" />
+                <Setter Property="Grid.ColumnSpan" Value="3" />
+                <Setter Property="HorizontalTextAlignment" Value="End" />
+            </Style>
+
+            <Style x:Key="InputMemberSwitch" TargetType="{x:Type Switch}">
+                <Setter Property="Grid.Column" Value="14" />
+                <Setter Property="Grid.ColumnSpan" Value="3" />
+            </Style>
+
+            <Style x:Key="InputMemberCancelImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="17" />
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+                <Setter Property="Source" Value="{Binding InputConfirmCancelIconSource}" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+
+            <Style x:Key="InputConfirmAddImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+                <Setter Property="Source" Value="{Binding InputConfirmAddIconSource}" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+
+            <Style x:Key="InputConfirmAddBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="2" />
+            </Style>
+            
+            <Style x:Key="InputConfirmAddLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.Column" Value="3" />
+                <Setter Property="Grid.ColumnSpan" Value="17" />
+                <Setter Property="Text" Value="{Binding AddText}" />
+            </Style>
+
+            <Style x:Key="InputConfirmLeftLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Grid.ColumnSpan" Value="9" />
+            </Style>
+
+            <Style x:Key="InputConfirmRightImage" TargetType="{x:Type Image}">
+                <Setter Property="Grid.Column" Value="9" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+
+            <Style x:Key="InputConfirmLeftEntry" TargetType="{x:Type Entry}" BasedOn="{StaticResource InputConfirmEntry}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Grid.ColumnSpan" Value="9" />
+            </Style>
+
+            <!-- 文字列 -->
+
+            <x:String x:Key="calendar">カレンダー</x:String>
+			<x:String x:Key="task">タスク</x:String>
+            <x:String x:Key="schedule">スケジュール</x:String>
+            <x:String x:Key="title">タイトル</x:String>
+            <x:String x:Key="allDay">終日</x:String>
+            <x:String x:Key="edit">編集</x:String>
+            <x:String x:Key="place">場所</x:String>
+            <x:String x:Key="notes">メモ</x:String>
+
+        </ResourceDictionary>
+		
+    </Application.Resources>
+</Application>
