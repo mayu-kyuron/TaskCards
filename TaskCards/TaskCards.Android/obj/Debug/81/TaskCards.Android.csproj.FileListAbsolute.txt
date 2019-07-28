@@ -14,6 +14,7 @@ D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\TaskCards.A
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\TaskCards.Android.dll
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\TaskCards.Android.pdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\bin\com.Matsumura.TaskCards.apk
+D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\res\drawable\btn_add.png
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\res\layout\tabbar.xml
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\res\layout\toolbar.xml
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\res\values\styles.xml
@@ -124,7 +125,6 @@ D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\ass
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\assets\System.Web.Services.pdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\assets\System.Xml.Linq.pdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\assets\System.Xml.pdb
-D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\res\drawable\btn_add.png
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\bin\Debug\TaskCards.Android.dll
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\bin\Debug\netstandard2.0\TaskCards.dll
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\bin\Debug\TaskCards.dll.mdb

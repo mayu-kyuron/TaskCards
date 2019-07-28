@@ -65,13 +65,13 @@ namespace TaskCards.Pages {
 			//tgrProject.Tapped += (sender, e) => OnClickProject(sender, e);
 			//gdProject.GestureRecognizers.Add(tgrProject);
 
-			var tgrRepeatGrid = new TapGestureRecognizer();
-			tgrRepeatGrid.Tapped += (sender, e) => OnClickRepeatGrid(sender, e);
-			gdRepeat.GestureRecognizers.Add(tgrRepeatGrid);
+			//var tgrRepeatGrid = new TapGestureRecognizer();
+			//tgrRepeatGrid.Tapped += (sender, e) => OnClickRepeatGrid(sender, e);
+			//gdRepeat.GestureRecognizers.Add(tgrRepeatGrid);
 
-			var tgrRepeatCancel = new TapGestureRecognizer();
-			tgrRepeatCancel.Tapped += (sender, e) => OnClickRepeatCancel(sender, e);
-			imgRepeat.GestureRecognizers.Add(tgrRepeatCancel);
+			//var tgrRepeatCancel = new TapGestureRecognizer();
+			//tgrRepeatCancel.Tapped += (sender, e) => OnClickRepeatCancel(sender, e);
+			//imgRepeat.GestureRecognizers.Add(tgrRepeatCancel);
 		}
 
 		/// <summary>

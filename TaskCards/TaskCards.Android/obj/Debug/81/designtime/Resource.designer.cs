@@ -2366,7 +2366,10 @@ namespace TaskCards.Droid
 			public const int avd_show_password_3 = 2130837613;
 			
 			// aapt resource value: 0x7F010002
-			public const int btn_option = 2130771970;
+			public const int btn_add = 2130771970;
+			
+			// aapt resource value: 0x7F010003
+			public const int btn_option = 2130771971;
 			
 			// aapt resource value: 0x7F020001
 			public const int bubble = 2130837505;
@@ -2383,8 +2386,8 @@ namespace TaskCards.Droid
 			// aapt resource value: 0x7F020005
 			public const int button_compat_shape = 2130837509;
 			
-			// aapt resource value: 0x7F010003
-			public const int calendar = 2130771971;
+			// aapt resource value: 0x7F010004
+			public const int calendar = 2130771972;
 			
 			// aapt resource value: 0x7F020006
 			public const int color_button_background = 2130837510;
@@ -2422,8 +2425,8 @@ namespace TaskCards.Droid
 			// aapt resource value: 0x7F02000B
 			public const int dropdown_popup_background_up = 2130837515;
 			
-			// aapt resource value: 0x7F010004
-			public const int icon = 2130771972;
+			// aapt resource value: 0x7F010005
+			public const int icon = 2130771973;
 			
 			// aapt resource value: 0x7F020053
 			public const int ic_audiotrack_dark = 2130837587;
@@ -2437,8 +2440,8 @@ namespace TaskCards.Droid
 			// aapt resource value: 0x7F020056
 			public const int ic_dialog_close_light = 2130837590;
 			
-			// aapt resource value: 0x7F010009
-			public const int ic_errorstatus = 2130771977;
+			// aapt resource value: 0x7F010010
+			public const int ic_errorstatus = 2130771984;
 			
 			// aapt resource value: 0x7F020057
 			public const int ic_group_collapse_00 = 2130837591;
@@ -2851,8 +2854,8 @@ namespace TaskCards.Droid
 			// aapt resource value: 0x7F02000D
 			public const int ic_search = 2130837517;
 			
-			// aapt resource value: 0x7F010010
-			public const int ic_successstatus = 2130771984;
+			// aapt resource value: 0x7F010011
+			public const int ic_successstatus = 2130771985;
 			
 			// aapt resource value: 0x7F0200DE
 			public const int ic_vol_type_speaker_dark = 2130837726;
@@ -2977,17 +2980,17 @@ namespace TaskCards.Droid
 			// aapt resource value: 0x7F02000F
 			public const int ondemand_overlay = 2130837519;
 			
-			// aapt resource value: 0x7F010007
-			public const int roundedbg = 2130771975;
-			
 			// aapt resource value: 0x7F010008
-			public const int roundedbgdark = 2130771976;
+			public const int roundedbg = 2130771976;
+			
+			// aapt resource value: 0x7F010009
+			public const int roundedbgdark = 2130771977;
+			
+			// aapt resource value: 0x7F010007
+			public const int splash = 2130771975;
 			
 			// aapt resource value: 0x7F010006
-			public const int splash = 2130771974;
-			
-			// aapt resource value: 0x7F010005
-			public const int splash_screen = 2130771973;
+			public const int splash_screen = 2130771974;
 			
 			// aapt resource value: 0x7F020010
 			public const int verify_checkmark = 2130837520;

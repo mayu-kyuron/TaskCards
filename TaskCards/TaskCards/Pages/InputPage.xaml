@@ -141,6 +141,7 @@
                             Text="{Binding NotesText}"/>
                     </Grid>
                     
+                    <!--
                     <Grid x:Name="gdRepeat" Grid.Row="7" Style="{StaticResource NoSpacingFullGrid}">
                         <Label
                             Style="{StaticResource InputConfirmLeftLabel}"
@@ -150,16 +151,17 @@
                             Style="{StaticResource InputConfirmRightImage}"
                             Source="{Binding InputConfirmCancelIconSource}"/>
                     </Grid>
+                    -->
 
                     <Entry
-                        Grid.Row="8"
+                        Grid.Row="7"
                         Style="{StaticResource InputConfirmEntry}"
                         Text="{Binding PlaceText}"
                         Placeholder="{StaticResource place}"/>
 
                     <BoxView
-                        Grid.Row="9"
-                        Grid.RowSpan="5"/>
+                        Grid.Row="8"
+                        Grid.RowSpan="6"/>
 
                 </Grid>
 

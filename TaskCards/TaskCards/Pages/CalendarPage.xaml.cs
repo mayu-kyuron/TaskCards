@@ -20,8 +20,7 @@ namespace TaskCards.Pages {
 		CalendarViewModel viewModel;
 
 		bool isFirstShow = true; // 最初の表示かどうか
-		DateTime selectedDate = DateTime.Today; // 選択された日付
-		DateTime lastSelectedDate = DateTime.Today; // ひとつ前に選択された日付
+		DateTime dateOfLastShownMonth; // ひとつ前に表示された月の日付
 
 		public CalendarPage () {
 			Initialize();
@@ -33,7 +32,9 @@ namespace TaskCards.Pages {
 		private void Initialize() {
 			InitializeComponent();
 
-			calenderBase.SelectedDate = DateTime.Today;
+			// 初期表示月、選択日を設定
+			calenderBase.StartDate = CalendarViewModel.selectedDate;
+			calenderBase.SelectedDate = CalendarViewModel.selectedDate;
 
 			SizeChanged += OnSizeChanged;
 
@@ -85,11 +86,11 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
-			this.viewModel = new CalendarViewModel(this.selectedDate, cvDialogBack, lblDate);
+			this.viewModel = new CalendarViewModel(cvDialogBack, lblDate, gdSchedule);
 			BindingContext = this.viewModel;
 
 			// カレンダーの各日付イベントとタップイベントを付与
-			if(this.isFirstShow) SetCalendarDateEventsAndTapEvents();
+			if(this.isFirstShow) SetCalendarDateEventsAndTapEvents(CalendarViewModel.selectedDate);
 
 			this.isFirstShow = false;
 		}
@@ -99,7 +100,7 @@ namespace TaskCards.Pages {
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		//private void OnClickDate(object sender, EventArgs e) {
+		private void OnClickDate(object sender, EventArgs e) {
 
 		//	// ひとつ前に選択したのと同じ日付を選んだ場合、受け渡すselectedDateがnullになるのを防ぐ。
 		//	this.selectedDate = this.lastSelectedDate;
@@ -109,7 +110,19 @@ namespace TaskCards.Pages {
 		//	// その日の予定・タスクのダイアログを表示する。
 		//	lblDate.Text = this.selectedDate.ToString(StringConst.DateTappedDialogDateFormat);
 		//	cvDialogBack.IsVisible = true;
-		//}
+		}
+
+		/// <summary>
+		/// カレンダー左矢印クリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickLeftArrow(object sender, EventArgs e) {
+
+			// カレンダーの各日付イベントとタップイベントを付与し直す
+			gdSchedulesAndTasks.Children.Clear();
+			SetCalendarDateEventsAndTapEvents(this.dateOfLastShownMonth.AddMonths(-1));
+		}
 
 		/// <summary>
 		/// カレンダー右矢印クリックイベント
@@ -118,6 +131,9 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickRightArrow(object sender, EventArgs e) {
 
+			// カレンダーの各日付イベントとタップイベントを付与し直す
+			gdSchedulesAndTasks.Children.Clear();
+			SetCalendarDateEventsAndTapEvents(this.dateOfLastShownMonth.AddMonths(1));
 		}
 
 		/// <summary>
@@ -126,6 +142,8 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnClickDialogBack(object sender, EventArgs e) {
+
+			// 日付選択ダイアログを非表示に
 			cvDialogBack.IsVisible = false;
 		}
 
@@ -144,20 +162,27 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnClickAddSchedule(object sender, EventArgs e) {
-			Application.Current.MainPage = new InputPage(this.viewModel.selectedDate, 
+
+			// 予定追加用の入力ページに遷移
+			Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate, 
 				TableDiv.予定, PageDiv.カレンダー, ExecuteDiv.追加);
 		}
 
-		private void SetCalendarDateEventsAndTapEvents() {
+		/// <summary>
+		/// カレンダーの各日付イベントとタップイベントを設定する。
+		/// </summary>
+		/// <param name="anyDateOfMonth">該当月の日付</param>
+		private void SetCalendarDateEventsAndTapEvents(DateTime anyDateOfMonth) {
 
-			DateTime startDateOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-			DateTime endDateOfMonth = (new DateTime(DateTime.Now.Year, DateTime.Now.AddMonths(1).Month, 1)).AddDays(-1);
+			DateTime startDateOfMonth = new DateTime(anyDateOfMonth.Year, anyDateOfMonth.Month, 1);
+			DateTime endDateOfMonth = startDateOfMonth.AddMonths(1).AddDays(-1);
 			int firstColumn = (int)startDateOfMonth.DayOfWeek;
+			this.dateOfLastShownMonth = startDateOfMonth;
 
 			var projectDao = new ProjectDao();
 
 			var scheduleDao = new ScheduleDao();
-			Dictionary<int, List<Schedule>> scheduleMap = scheduleDao.GetScheduleListByAnyDateOfMonth(DateTime.Now);
+			Dictionary<int, List<Schedule>> scheduleMap = scheduleDao.GetMonthScheduleMap(anyDateOfMonth);
 
 			bool isStartWeek = true;
 			DateTime currentDate = startDateOfMonth;
@@ -200,14 +225,8 @@ namespace TaskCards.Pages {
 					}
 
 					// 日付を引数にしたタップイベントを付与
-					var tapGestureRecognizer = new TapGestureRecognizer();
-					tapGestureRecognizer.SetBinding(TapGestureRecognizer.CommandProperty, "TappedCellCommand");
-
-					var binding = new Binding();
-					binding.Source = currentDate.ToString();
-					tapGestureRecognizer.SetBinding(TapGestureRecognizer.CommandParameterProperty, binding);
-
-					grid.GestureRecognizers.Add(tapGestureRecognizer);
+					grid.GestureRecognizers.Add(LayoutUtility.GetTapGestureRecognizerWithParameter(
+						"TappedCellCommand", currentDate.ToString()));
 
 					// カレンダーに日付セルグリッドを追加
 					gdSchedulesAndTasks.Children.Add(grid, column, row);

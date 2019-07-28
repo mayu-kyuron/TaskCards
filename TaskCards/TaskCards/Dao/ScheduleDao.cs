@@ -1,6 +1,7 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TaskCards.Data;
 using TaskCards.Entities;
 
@@ -12,11 +13,38 @@ namespace TaskCards.Dao {
 	public class ScheduleDao {
 
 		/// <summary>
-		/// 該当月の日付から１か月分のスケジュールリストマップを取得する。
+		/// １日のスケジュールリストを取得する。
+		/// </summary>
+		/// <param name="date">日付</param>
+		/// <returns>スケジュールリスト</returns>
+		public List<Schedule> GetDayScheduleList(DateTime date) {
+			var preferences = new Preferences();
+			var entityList = new List<Schedule>();
+
+			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Schedule>();
+
+					// DateTime型のDateは、LinqのSQLでは使えないので、一度List化してからWhereで検索する。
+					entityList = con.Table<Schedule>().ToList()
+					.Where(v => v.StartDate.Date == date.Date)
+					.OrderBy(v => v.StartDate)
+					.ToList();
+				});
+			}
+
+			return entityList;
+		}
+
+		/// <summary>
+		/// 該当月の日付から１か月分のスケジュールマップを取得する。
 		/// </summary>
 		/// <param name="anyDateOfMonth">該当月の日付</param>
 		/// <returns>スケジュールリストマップ（キー：開始日、値：スケジュールリスト）</returns>
-		public Dictionary<int, List<Schedule>> GetScheduleListByAnyDateOfMonth(DateTime anyDateOfMonth) {
+		public Dictionary<int, List<Schedule>> GetMonthScheduleMap(DateTime anyDateOfMonth) {
 			var preferences = new Preferences();
 			var entityMap = new Dictionary<int, List<Schedule>>();
 
@@ -50,7 +78,7 @@ namespace TaskCards.Dao {
 					lastStartDay = entity.StartDate.Day;
 				}
 
-				entityMap.Add((int)lastStartDay, scheduleList);
+				if (lastStartDay != null) entityMap.Add((int)lastStartDay, scheduleList);
 			}
 
 			return entityMap;

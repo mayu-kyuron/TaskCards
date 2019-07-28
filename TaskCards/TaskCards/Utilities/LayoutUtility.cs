@@ -43,5 +43,23 @@ namespace TaskCards.Utilities {
 					return Color.White;
 			}
 		}
+
+		/// <summary>
+		/// 引数ありのTapGestureRecognizerを取得する。
+		/// </summary>
+		/// <param name="commandName">コマンド名</param>
+		/// <param name="parameter">引数</param>
+		/// <returns>TapGestureRecognizer</returns>
+		public static TapGestureRecognizer GetTapGestureRecognizerWithParameter(string commandName, string parameter) {
+
+			var tapGestureRecognizer = new TapGestureRecognizer();
+			tapGestureRecognizer.SetBinding(TapGestureRecognizer.CommandProperty, commandName);
+
+			var binding = new Binding();
+			binding.Source = parameter;
+			tapGestureRecognizer.SetBinding(TapGestureRecognizer.CommandParameterProperty, binding);
+
+			return tapGestureRecognizer;
+		}
 	}
 }
