@@ -1,4 +1,5 @@
 ﻿using System;
+using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
 using TaskCards.Entities;
@@ -133,6 +134,17 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDelete(object sender, EventArgs e) {
 
+			Device.BeginInvokeOnMainThread((async () => {
+				var result = await DisplayAlert(StringConst.DialogTitleConfirm, 
+					String.Format(StringConst.MessageDeleteConfirm, StringConst.WordSchedule),
+					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
+
+				if (result) {
+					ScheduleDao scheduleDao = new ScheduleDao();
+					scheduleDao.Delete(this.scheduleId);
+					OnPageBack();
+				}
+			}));
 		}
 
 		/// <summary>

@@ -157,7 +157,7 @@ namespace TaskCards.Dao {
 		/// 予定を削除する。
 		/// </summary>
 		/// <param name="id">ID</param>
-		public void Delete(int id) {
+		public void Delete(long id) {
 			var preferences = new Preferences();
 
 			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {

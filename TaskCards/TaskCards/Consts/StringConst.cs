@@ -47,6 +47,7 @@
 		public const string MessageAdd = "{0:s}を追加する";
 		public const string MessageInputCancelConfirm = "入力した内容は失われます。\nキャンセルしてもよろしいですか？";
 		public const string MessageWrongTimeSpan = "{0:s}は{1:s}より\n前でなければなりません。";
+		public const string MessageDeleteConfirm = "削除したデータは元に戻せません。\nこの{0:s}を削除しますか？";
 
 		// 固有メッセージ
 		public const string LogoutConfirmMessage = "ログアウトして\nログイン画面に戻ります。\nよろしいですか？";
