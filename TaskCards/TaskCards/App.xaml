@@ -170,7 +170,7 @@
             </Style>
 
             <Style x:Key="InputConfirmSmallTitleLabel" TargetType="{x:Type Label}">
-                <Setter Property="TextColor" Value="#2F4F4F" />
+                <Setter Property="TextColor" Value="#191970" />
                 <Setter Property="VerticalTextAlignment" Value="End" />
                 <Setter Property="FontSize" Value="Small" />
             </Style>
@@ -189,6 +189,22 @@
             </Style>
 
             <Style x:Key="InputConfirmTitleEntry" TargetType="{x:Type Entry}" BasedOn="{StaticResource InputConfirmEntry}">
+                <Setter Property="Text" Value="{Binding Path=TitleText}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="ConfirmProjectLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmSmallTitleLabel}">
+                <Setter Property="Grid.Row" Value="0" />
+                <Setter Property="Text" Value="{Binding Path=ProjectText}" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="ConfirmTitleScrollView" TargetType="{x:Type ScrollView}">
+                <Setter Property="Grid.Row" Value="1" />
+                <Setter Property="Grid.RowSpan" Value="2" />
+            </Style>
+
+            <Style x:Key="ConfirmTitleLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
                 <Setter Property="Text" Value="{Binding Path=TitleText}" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />
             </Style>
@@ -220,6 +236,26 @@
             <Style x:Key="InputEndTimePicker" TargetType="{x:Type TimePicker}" BasedOn="{StaticResource InputTimePicker}">
                 <Setter Property="Grid.Column" Value="17" />
                 <Setter Property="Time" Value="{Binding EndTime}" />
+            </Style>
+
+            <Style x:Key="ConfirmTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.ColumnSpan" Value="3" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="Large" />
+            </Style>
+
+            <Style x:Key="ConfirmStartTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource ConfirmTimeLabel}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Text" Value="{Binding Path=StartTimeText}" />
+            </Style>
+
+            <Style x:Key="ConfirmTimeArrowImage" TargetType="{x:Type Image}" BasedOn="{StaticResource InputConfirmDateTimeArrowImage}">
+                <Setter Property="Grid.Column" Value="3" />
+            </Style>
+
+            <Style x:Key="ConfirmEndTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource ConfirmTimeLabel}">
+                <Setter Property="Grid.Column" Value="4" />
+                <Setter Property="Text" Value="{Binding Path=EndTimeText}" />
             </Style>
 
             <Style x:Key="InputMemberNameLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
@@ -285,6 +321,7 @@
             <x:String x:Key="title">タイトル</x:String>
             <x:String x:Key="allDay">終日</x:String>
             <x:String x:Key="edit">編集</x:String>
+            <x:String x:Key="delete">削除</x:String>
             <x:String x:Key="place">場所</x:String>
             <x:String x:Key="notes">メモ</x:String>
 

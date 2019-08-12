@@ -13,6 +13,33 @@ namespace TaskCards.Dao {
 	public class ScheduleDao {
 
 		/// <summary>
+		/// スケジュールIDよりスケジュールデータを取得する。
+		/// </summary>
+		/// <param name="id">スケジュールID</param>
+		/// <returns>スケジュールデータ</returns>
+		public Schedule GetScheduleById(long id) {
+			var preferences = new Preferences();
+			var entity = new Schedule();
+
+			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				TableQuery<Schedule> query = new TableQuery<Schedule>(con);
+
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Schedule>();
+
+					query = con.Table<Schedule>()
+					.Where(v => v.Id == id);
+				});
+
+				entity = query.FirstOrDefault();
+			}
+
+			return entity;
+		}
+
+		/// <summary>
 		/// １日のスケジュールリストを取得する。
 		/// </summary>
 		/// <param name="date">日付</param>
@@ -99,6 +126,27 @@ namespace TaskCards.Dao {
 					con.CreateTable<Schedule>();
 
 					con.Insert(entity);
+				});
+			}
+
+			return entity.Id;
+		}
+
+		/// <summary>
+		/// 予定を更新する。
+		/// </summary>
+		/// <param name="entity">Entity</param>
+		/// <returns>キー</returns>
+		public long Update(Schedule entity) {
+			var preferences = new Preferences();
+
+			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Schedule>();
+
+					con.Update(entity);
 				});
 			}
 

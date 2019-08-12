@@ -14,6 +14,7 @@
     <None Remove="Images\btn_back.png" />
     <None Remove="Images\btn_cancel.png" />
     <None Remove="Images\btn_check.png" />
+    <None Remove="Images\btn_menu.png" />
     <None Remove="Images\date_time_right_arrow.png" />
     <None Remove="Images\input_right_arrow.png" />
     <None Remove="Images\left_arrow.png" />
@@ -26,6 +27,7 @@
     <EmbeddedResource Include="Images\btn_back.png" />
     <EmbeddedResource Include="Images\btn_cancel.png" />
     <EmbeddedResource Include="Images\btn_check.png" />
+    <EmbeddedResource Include="Images\btn_menu.png" />
     <EmbeddedResource Include="Images\date_time_right_arrow.png" />
     <EmbeddedResource Include="Images\input_right_arrow.png" />
     <EmbeddedResource Include="Images\left_arrow.png" />
@@ -51,6 +53,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Pages\CalendarPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ConfirmSchedulePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\InputPage.xaml">

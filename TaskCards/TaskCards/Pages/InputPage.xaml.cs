@@ -23,16 +23,18 @@ namespace TaskCards.Pages {
 		TableDiv tableDiv; // データ登録先のテーブル区分
 		PageDiv exPageDiv; // 元のページ区分
 		ExecuteDiv executeDiv; // 実行区分
+		long id; // ID
 
 		public InputPage() {
 			Initialize();
 		}
 
-		public InputPage(DateTime selectedDate, TableDiv tableDiv, PageDiv exPageDiv, ExecuteDiv executeDiv) {
+		public InputPage(DateTime selectedDate, TableDiv tableDiv, PageDiv exPageDiv, ExecuteDiv executeDiv, long id = 0) {
 			this.selectedDate = selectedDate;
 			this.tableDiv = tableDiv;
 			this.exPageDiv = exPageDiv;
 			this.executeDiv = executeDiv;
+			this.id = id;
 			Initialize();
 		}
 
@@ -80,11 +82,12 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
-			this.viewModel = new InputViewModel(this.selectedDate, Height, cvDialogBack, Resources);
+			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, 
+				Height, cvDialogBack, swAllDay, Resources);
 			BindingContext = this.viewModel;
 
+			// 繰り返し選択ダイアログのリスト行の高さを設定
 			lstRepeat.RowHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight);
-
 			double dialogHeight = lstRepeat.RowHeight * 4 + 2;
 			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = (Height - dialogHeight) / 2 });
 			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogHeight });
@@ -137,7 +140,7 @@ namespace TaskCards.Pages {
 				case TableDiv.プロジェクト:
 					break;
 				case TableDiv.予定:
-					InsertScheduleAndScheduleMembers();
+					InsertOrUpdateScheduleAndScheduleMembers();
 					break;
 				case TableDiv.タスク:
 					break;
@@ -152,11 +155,7 @@ namespace TaskCards.Pages {
 			}));
 
 			// 遷移
-			switch (this.exPageDiv) {
-				case PageDiv.カレンダー:
-					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
-					break;
-			}
+			GoBackToExPage();
 		}
 
 		/// <summary>
@@ -211,8 +210,23 @@ namespace TaskCards.Pages {
 				var result = await DisplayAlert(StringConst.DialogTitleConfirm, StringConst.MessageInputCancelConfirm, 
 					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
 
-				if (result) Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
+				if (result) GoBackToExPage();
 			}));
+		}
+
+		/// <summary>
+		/// 遷移元のページに戻る。
+		/// </summary>
+		private void GoBackToExPage() {
+
+			switch (this.exPageDiv) {
+				case PageDiv.カレンダー:
+					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
+					break;
+				case PageDiv.スケジュール確認:
+					Application.Current.MainPage = new ConfirmSchedulePage(this.id);
+					break;
+			}
 		}
 
 		/// <summary>
@@ -251,9 +265,9 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
-		/// スケジュールと所属メンバーを登録する。
+		/// スケジュールと所属メンバーを登録または更新する。
 		/// </summary>
-		private void InsertScheduleAndScheduleMembers() {
+		private void InsertOrUpdateScheduleAndScheduleMembers() {
 
 			DateTime startDate = this.selectedDate.Date;
 			DateTime endDate = this.selectedDate.Date;
@@ -262,8 +276,8 @@ namespace TaskCards.Pages {
 				endDate += this.viewModel.EndTime;
 			}
 
-			// スケジュールの登録
 			var schedule = new Schedule {
+				Id = this.id,
 				Title = this.viewModel.TitleText,
 				StartDate = startDate,
 				EndDate = endDate,
@@ -275,14 +289,24 @@ namespace TaskCards.Pages {
 			};
 
 			var scheduleDao = new ScheduleDao();
-			long scheduleId = scheduleDao.Insert(schedule);
+			var scheduleMemberDao = new ScheduleMemberDao();
+
+			// スケジュールの登録または更新
+			if (this.executeDiv == ExecuteDiv.追加) {
+				this.id = scheduleDao.Insert(schedule);
+			}
+			else if (this.executeDiv == ExecuteDiv.更新) {
+				this.id = scheduleDao.Update(schedule);
+
+				// 前回のスケジュールメンバーの削除
+				scheduleMemberDao.DeleteAllByScheduleId(this.id);
+			}
 
 			// スケジュールメンバーの登録
-			var scheduleMemberDao = new ScheduleMemberDao();
 			foreach (long memberId in this.viewModel.MemberIdList) {
 
 				var scheduleMember = new ScheduleMember {
-					ScheduleId = scheduleId,
+					ScheduleId = this.id,
 					MemberId = memberId,
 					CanEdit = true // 仮に全員が編集可能に
 				};

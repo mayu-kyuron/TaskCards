@@ -44,7 +44,8 @@ namespace TaskCards.ViewModels {
 		public List<long> MemberIdList { get; set; } = new List<long>();
 		public RepeatDiv RepeatDiv { get; set; }
 
-		public InputViewModel(DateTime selectedDate, double height, ContentView cvDialogBack, ResourceDictionary resources) {
+		public InputViewModel(DateTime selectedDate, TableDiv tableDiv, ExecuteDiv executeDiv, long id,
+			double height, ContentView cvDialogBack, Switch swAllDay, ResourceDictionary resources) {
 
 			// レイアウト全体の高さの設定
 			// 項目を増やすごとに、デバイスの高さに対して項目の高さ分、掛ける割合を増やしていく。
@@ -60,45 +61,24 @@ namespace TaskCards.ViewModels {
 			RepeatDiv = RepeatDiv.繰り返しなし;
 			resources["RepeatText"] = StringConst.RepeatNone;
 
-			// 開始時間：現在時間＋1時間－現在の分数（例：12:34→13:00）
-			// 終了時間：現在時間＋2時間－現在の分数（例：12:34→14:00）
-			StartTime = new TimeSpan(DateTime.Now.AddHours(1).Hour, 0, 0);
-			EndTime = new TimeSpan(DateTime.Now.AddHours(2).Hour, 0, 0);
+			// 実行区分ごとに項目を設定
+			switch (executeDiv) {
 
-			// TODO 仮のプロジェクトを初期選択に
-			long id = 1;
-			ProjectDao projectDao = new ProjectDao();
-			Project project = projectDao.GetProjectById(id);
-			ProjectId = project.Id;
-			ProjectText = project.Title;
+				case ExecuteDiv.追加:
+					SetAddSchedule();
+					break;
 
-			// TODO 仮のメンバーを初期選択に
-			long id2 = 1;
-			MemberDao memberDao = new MemberDao();
-			Member member = memberDao.GetMemberById(id2);
-			MemberIdList.Add(member.Id);
-			Member1Text = member.Name;
+				case ExecuteDiv.更新:
+					SetEditSchedule(id, swAllDay, resources);
+					break;
+			}
 
 			// 繰り返し項目を設定
 			for (int i = 1; i <= 4; i++) {
 
 				var selectedItemDto = new SelectedItemDto();
 				selectedItemDto.Id = i;
-
-				switch (selectedItemDto.Id) {
-					case (long)RepeatDiv.毎日:
-						selectedItemDto.Name = StringConst.RepeatEveryday;
-						break;
-					case (long)RepeatDiv.毎週:
-						selectedItemDto.Name = StringConst.RepeatEveryWeek;
-						break;
-					case (long)RepeatDiv.毎月:
-						selectedItemDto.Name = StringConst.RepeatEveryMonth;
-						break;
-					case (long)RepeatDiv.毎年:
-						selectedItemDto.Name = StringConst.RepeatEveryYear;
-						break;
-				}
+				selectedItemDto.Name = GetRepeatText((RepeatDiv)selectedItemDto.Id);
 
 				// データを画面表示リストに設定
 				this.RepeatItems.Add(selectedItemDto);
@@ -110,6 +90,86 @@ namespace TaskCards.ViewModels {
 				resources["RepeatText"] = selectedItemDto.Name;
 				cvDialogBack.IsVisible = false;
 			});
+		}
+
+		/// <summary>
+		/// スケジュール追加時の項目を設定する。
+		/// </summary>
+		private void SetAddSchedule() {
+
+			// 開始時間：現在時間＋1時間－現在の分数（例：12:34→13:00）
+			// 終了時間：現在時間＋2時間－現在の分数（例：12:34→14:00）
+			StartTime = new TimeSpan(DateTime.Now.AddHours(1).Hour, 0, 0);
+			EndTime = new TimeSpan(DateTime.Now.AddHours(2).Hour, 0, 0);
+
+			// TODO 仮のプロジェクトを初期選択に
+			long id1 = 1;
+			ProjectDao projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(id1);
+			ProjectId = project.Id;
+			ProjectText = project.Title;
+
+			// TODO 仮のメンバーを初期選択に
+			long id2 = 1;
+			MemberDao memberDao = new MemberDao();
+			Member member = memberDao.GetMemberById(id2);
+			MemberIdList.Add(member.Id);
+			Member1Text = member.Name;
+		}
+
+		/// <summary>
+		/// スケジュール編集時の項目を設定する。
+		/// </summary>
+		/// <param name="id">ID</param>
+		/// <param name="swAllDay">終日Switch</param>
+		/// <param name="resources">リソース</param>
+		private void SetEditSchedule(long id, Switch swAllDay, ResourceDictionary resources) {
+
+			ScheduleDao scheduleDao = new ScheduleDao();
+			Schedule schedule = scheduleDao.GetScheduleById(id);
+
+			ProjectDao projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(schedule.ProjectId);
+
+			ScheduleMemberDao scheduleMemberDao = new ScheduleMemberDao();
+			List<ScheduleMember> scheduleMemberList = scheduleMemberDao.GetScheduleMemberListByScheduleId(schedule.Id);
+
+			TitleText = schedule.Title;
+			StartTime = new TimeSpan(schedule.StartDate.Hour, schedule.StartDate.Minute, schedule.StartDate.Second);
+			EndTime = new TimeSpan(schedule.EndDate.Hour, schedule.EndDate.Minute, schedule.EndDate.Second);
+			if(schedule.isAllDay) swAllDay.IsToggled = true;
+			ProjectId = project.Id;
+			ProjectText = project.Title;
+			RepeatDiv = schedule.RepeatDiv;
+			resources["RepeatText"] = GetRepeatText(schedule.RepeatDiv);
+			PlaceText = schedule.Place;
+			NotesText = schedule.Notes;
+
+			// TODO 全メンバーIDを設定。全メンバー名も画面表示用に要設定
+			foreach (ScheduleMember scheduleMember in scheduleMemberList) {
+				MemberIdList.Add(scheduleMember.MemberId);
+			}
+		}
+
+		/// <summary>
+		/// 繰り返しテキストを取得する。
+		/// </summary>
+		/// <param name="repeatDiv">繰り返し区分</param>
+		/// <returns>繰り返しテキスト</returns>
+		private string GetRepeatText(RepeatDiv repeatDiv) {
+
+			switch (repeatDiv) {
+				case RepeatDiv.毎日:
+					return StringConst.RepeatEveryday;
+				case RepeatDiv.毎週:
+					return StringConst.RepeatEveryWeek;
+				case RepeatDiv.毎月:
+					return StringConst.RepeatEveryMonth;
+				case RepeatDiv.毎年:
+					return StringConst.RepeatEveryYear;
+				default:
+					return null;
+			}
 		}
 	}
 }

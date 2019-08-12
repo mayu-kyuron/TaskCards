@@ -6,6 +6,12 @@
 	public class ScheduleMember {
 
 		/// <summary>
+		/// ID
+		/// </summary>
+		[SQLite.PrimaryKey, SQLite.AutoIncrement]
+		public long Id { set; get; }
+
+		/// <summary>
 		/// 予定ID
 		/// </summary>
 		public long ScheduleId { set; get; }

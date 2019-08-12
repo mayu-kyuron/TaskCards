@@ -5,6 +5,7 @@ using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
 using TaskCards.Entities;
+using TaskCards.Pages;
 using TaskCards.Utilities;
 using Xamarin.Forms;
 
@@ -90,7 +91,8 @@ namespace TaskCards.ViewModels {
 		/// <param name="idStr">ID（文字列）</param>
 		private void OnTapSchedule(string idStr) {
 
-			
+			// 予定の確認ページに遷移
+			Application.Current.MainPage = new ConfirmSchedulePage(long.Parse(idStr));
 		}
 
 		/// <summary>
@@ -212,9 +214,12 @@ namespace TaskCards.ViewModels {
 				BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv),
 			};
 
+			string text = baseEvent.Title;
+			if (baseEvent.Title.Length > 13) text = text.Substring(0, 12) + "…";
+
 			// タイトルのラベルを生成
 			var titleLabel = new Label {
-				Text = baseEvent.Title,
+				Text = text,
 				VerticalTextAlignment = TextAlignment.Center,
 				TextColor = Color.FromHex("#2F4F4F"),
 			};

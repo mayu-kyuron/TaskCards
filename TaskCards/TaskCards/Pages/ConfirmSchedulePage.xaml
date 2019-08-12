@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:b="clr-namespace:TaskCards.Behaviors"
+             x:Class="TaskCards.Pages.ConfirmSchedulePage"
+             Style="{StaticResource ContentPage}"
+             Padding="{StaticResource ContentPagePadding}">
+    
+    <AbsoluteLayout Style="{StaticResource DialogBaseAbsoluteLayout}">
+
+        <ScrollView Style="{StaticResource DialogBaseScrollView}">
+            <Grid x:Name="layoutBase" Style="{StaticResource DialogBaseGrid}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="60*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Style="{StaticResource InputConfirmBaseGrid}">
+
+                    <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                        <Image
+                            x:Name="imgBackButton"
+                            Style="{StaticResource BackButtonImage}"/>
+                        <Label
+                            x:Name="lblTopDate"
+                            Style="{StaticResource TopDateLabel}"/>
+                        <Image
+                            x:Name="imgTopRightButton"
+                            Style="{StaticResource TopRightButtonImage}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Style="{StaticResource ConfirmProjectLabel}"/>
+                        <ScrollView Style="{StaticResource ConfirmTitleScrollView}">
+                            <Label
+                                Style="{StaticResource ConfirmTitleLabel}"/>
+                        </ScrollView>
+                    </Grid>
+
+                    <Grid x:Name="gdTime" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Style="{StaticResource ConfirmStartTimeLabel}"/>
+                        <Image
+                            Style="{StaticResource ConfirmTimeArrowImage}"/>
+                        <Label
+                            Style="{StaticResource ConfirmEndTimeLabel}"/>
+                    </Grid>
+                    <Label
+                        x:Name="lblAllDay"
+                        Grid.Row="2"
+                        Style="{StaticResource InputConfirmLabel}"
+                        Text="{StaticResource allDay}"
+                        HorizontalOptions="Center"
+                        IsVisible="False"/>
+
+                    <!--
+                    <ScrollView x:Name="svMember" Grid.Row="5" Grid.RowSpan="3">
+                        <Grid x:Name="ltMember" Style="{StaticResource NoSpacingFullGrid}" HeightRequest="{Binding MemberHeight}">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                                <Label
+                                    Style="{StaticResource InputMemberNameLabel}"
+                                    Text="{Binding Member1Text}"/>
+                                <Label
+                                    Style="{StaticResource InputMemberEditLabel}"
+                                    Text="{StaticResource edit}"/>
+                                <Switch
+                                    x:Name="swMemberEdit1"
+                                    Style="{StaticResource InputMemberSwitch}"/>
+                                <Image
+                                    x:Name="imgMemberCancel1"
+                                    Style="{StaticResource InputMemberCancelImage}"/>
+                            </Grid>
+
+                        </Grid>
+                    </ScrollView>
+                    -->
+
+                    <Grid Grid.Row="3" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Style="{StaticResource InputConfirmSmallTitleLabel}"
+                            Text="{StaticResource notes}"/>
+                        <ScrollView Grid.Row="2" Grid.RowSpan="9">
+                            <Label
+                                Style="{StaticResource InputConfirmLabel}"
+                                Text="{Binding NotesText}"
+                                VerticalTextAlignment="Start"/>
+                        </ScrollView>
+                    </Grid>
+
+                    <Grid Grid.Row="6" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Style="{StaticResource InputConfirmSmallTitleLabel}"
+                            Text="{StaticResource place}"/>
+                        <ScrollView Grid.Row="2" Grid.RowSpan="3">
+                            <Label
+                                Style="{StaticResource InputConfirmLabel}"
+                                Text="{Binding PlaceText}"/>
+                        </ScrollView>
+                    </Grid>
+
+                    <BoxView
+                        Grid.Row="7"
+                        Grid.RowSpan="7"/>
+
+                </Grid>
+
+            </Grid>
+        </ScrollView>
+
+        <ContentView x:Name="cvDialogBack" Style="{StaticResource DialogBackContentView}">
+            <Grid x:Name="gdDialogBack" Style="{StaticResource NoSpacingFullGrid}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="19*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="17*" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="gdDialogFront" Style="{StaticResource DialogFrontGrid}">
+
+                    <Grid x:Name="gdEdit" Grid.Row="0" Style="{StaticResource SelectDialogItemGrid}">
+                        <BoxView Grid.Column="0" />
+                        <Label
+                            Grid.Column="1"
+                            Grid.ColumnSpan="10"
+                            Style="{StaticResource SelectDialogItemLabel}"
+                            Text="{StaticResource edit}"/>
+                        <BoxView Grid.Column="11"/>
+                    </Grid>
+
+                    <Grid x:Name="gdDelete" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}">
+                        <BoxView Grid.Column="0" />
+                        <Label
+                            Grid.Column="1"
+                            Grid.ColumnSpan="10"
+                            Style="{StaticResource SelectDialogItemLabel}"
+                            Text="{StaticResource delete}"/>
+                        <BoxView Grid.Column="11"/>
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+        </ContentView>
+
+    </AbsoluteLayout>
+
+</ContentPage>
