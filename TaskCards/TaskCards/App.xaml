@@ -238,6 +238,21 @@
                 <Setter Property="Time" Value="{Binding EndTime}" />
             </Style>
 
+            <Style x:Key="InputDatePicker" TargetType="{x:Type DatePicker}">
+                <Setter Property="Grid.ColumnSpan" Value="10" />
+                <Setter Property="Format" Value="MM月dd日(ddd)" />
+            </Style>
+
+            <Style x:Key="InputStartDatePicker" TargetType="{x:Type DatePicker}" BasedOn="{StaticResource InputDatePicker}">
+                <Setter Property="Grid.Column" Value="0" />
+                <Setter Property="Date" Value="{Binding StartDate}" />
+            </Style>
+
+            <Style x:Key="InputEndDatePicker" TargetType="{x:Type DatePicker}" BasedOn="{StaticResource InputDatePicker}">
+                <Setter Property="Grid.Column" Value="14" />
+                <Setter Property="Date" Value="{Binding EndDate}" />
+            </Style>
+
             <Style x:Key="ConfirmTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
                 <Setter Property="Grid.ColumnSpan" Value="3" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -324,6 +339,7 @@
             <x:String x:Key="delete">削除</x:String>
             <x:String x:Key="place">場所</x:String>
             <x:String x:Key="notes">メモ</x:String>
+            <x:String x:Key="dailyTime"> 時間 / 日</x:String>
 
         </ResourceDictionary>
 		

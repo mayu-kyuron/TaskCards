@@ -60,7 +60,8 @@ namespace TaskCards.Dao {
 		/// <summary>
 		/// 予定メンバーを削除する。
 		/// </summary>
-		/// <param name="id">ID</param>
+		/// <param name="scheduleId">予定ID</param>
+		/// <param name="memberId">メンバーID</param>
 		public void Delete(int scheduleId, int memberId) {
 			var preferences = new Preferences();
 

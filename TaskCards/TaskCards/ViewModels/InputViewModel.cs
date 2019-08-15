@@ -31,6 +31,7 @@ namespace TaskCards.ViewModels {
 
 		public string TopDateText { get; set; }
 		public string TitleText { get; set; }
+		public string ExpectedDailyWorkTimeText { get; set; }
 		public string ProjectText { get; set; }
 		public string Member1Text { get; set; }
 		public string AddText { get; set; }
@@ -40,6 +41,8 @@ namespace TaskCards.ViewModels {
 
 		public TimeSpan StartTime { get; set; }
 		public TimeSpan EndTime { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
 		public long ProjectId { get; set; }
 		public List<long> MemberIdList { get; set; } = new List<long>();
 		public RepeatDiv RepeatDiv { get; set; }
@@ -61,15 +64,28 @@ namespace TaskCards.ViewModels {
 			RepeatDiv = RepeatDiv.繰り返しなし;
 			resources["RepeatText"] = StringConst.RepeatNone;
 
-			// 実行区分ごとに項目を設定
-			switch (executeDiv) {
+			// テーブル区分・実行区分ごとに項目を設定
+			switch (tableDiv) {
 
-				case ExecuteDiv.追加:
-					SetAddSchedule();
+				case TableDiv.予定:
+					switch (executeDiv) {
+						case ExecuteDiv.追加:
+							SetAddScheduleOrTask(tableDiv, selectedDate);
+							break;
+						case ExecuteDiv.更新:
+							SetEditSchedule(id, swAllDay, resources);
+							break;
+					}
 					break;
 
-				case ExecuteDiv.更新:
-					SetEditSchedule(id, swAllDay, resources);
+				case TableDiv.タスク:
+					switch (executeDiv) {
+						case ExecuteDiv.追加:
+							SetAddScheduleOrTask(tableDiv, selectedDate);
+							break;
+						case ExecuteDiv.更新:
+							break;
+					}
 					break;
 			}
 
@@ -93,14 +109,22 @@ namespace TaskCards.ViewModels {
 		}
 
 		/// <summary>
-		/// スケジュール追加時の項目を設定する。
+		/// スケジュールまたはタスク追加時の項目を設定する。
 		/// </summary>
-		private void SetAddSchedule() {
+		private void SetAddScheduleOrTask(TableDiv tableDiv, DateTime selectedDate) {
 
-			// 開始時間：現在時間＋1時間－現在の分数（例：12:34→13:00）
-			// 終了時間：現在時間＋2時間－現在の分数（例：12:34→14:00）
-			StartTime = new TimeSpan(DateTime.Now.AddHours(1).Hour, 0, 0);
-			EndTime = new TimeSpan(DateTime.Now.AddHours(2).Hour, 0, 0);
+			if (tableDiv == TableDiv.予定) {
+
+				// 開始時間：現在時間＋1時間－現在の分数（例：12:34→13:00）
+				// 終了時間：現在時間＋2時間－現在の分数（例：12:34→14:00）
+				StartTime = new TimeSpan(DateTime.Now.AddHours(1).Hour, 0, 0);
+				EndTime = new TimeSpan(DateTime.Now.AddHours(2).Hour, 0, 0);
+			}
+			else if (tableDiv == TableDiv.タスク) {
+
+				StartDate = selectedDate;
+				EndDate = selectedDate.AddDays(7);
+			}
 
 			// TODO 仮のプロジェクトを初期選択に
 			long id1 = 1;

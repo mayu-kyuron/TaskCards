@@ -126,6 +126,8 @@ D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\ass
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\assets\System.Xml.Linq.pdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\android\assets\System.Xml.pdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\bin\Debug\TaskCards.Android.dll
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\bin\Debug\netstandard2.0\TaskCards.dll
+D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\bin\Debug\TaskCards.dll.mdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\linksrc\TaskCards.Android.dll.mdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\linksrc\FormsViewGroup.dll.mdb
 D:\XamarinProject\TaskCards\TaskCards\TaskCards.Android\obj\Debug\81\linksrc\PCLAppConfig.dll.mdb

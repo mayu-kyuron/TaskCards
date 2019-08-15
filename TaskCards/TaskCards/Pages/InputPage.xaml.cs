@@ -74,6 +74,21 @@ namespace TaskCards.Pages {
 			//var tgrRepeatCancel = new TapGestureRecognizer();
 			//tgrRepeatCancel.Tapped += (sender, e) => OnClickRepeatCancel(sender, e);
 			//imgRepeat.GestureRecognizers.Add(tgrRepeatCancel);
+
+			// 各コントロールの表示切り替え
+			switch (this.tableDiv) {
+
+				case TableDiv.予定:
+					gdTime.IsVisible = true;
+					gdAllDay.IsVisible = true;
+					etPlace.IsVisible = true;
+					break;
+
+				case TableDiv.タスク:
+					gdDate.IsVisible = true;
+					gdExpectedDailyWorkTime.IsVisible = true;
+					break;
+			}
 		}
 
 		/// <summary>
@@ -143,6 +158,7 @@ namespace TaskCards.Pages {
 					InsertOrUpdateScheduleAndScheduleMembers();
 					break;
 				case TableDiv.タスク:
+					InsertOrUpdateTaskAndTaskMembers();
 					break;
 			}
 
@@ -247,18 +263,44 @@ namespace TaskCards.Pages {
 			}
 
 			// 時間または日付の整合性チェック
-			if (TimeSpan.Compare(this.viewModel.StartTime, this.viewModel.EndTime) == 1) {
+			if (this.tableDiv == TableDiv.予定) {
+				if (TimeSpan.Compare(this.viewModel.StartTime, this.viewModel.EndTime) == 1) {
 
-				string dateOrTime = "日";
-				if (this.tableDiv == TableDiv.予定) dateOrTime = "時間";
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongDateTime, "開始時間", "終了時間"),
+							StringConst.DialogAnswerPositive);
+					}));
 
-				Device.BeginInvokeOnMainThread((async () => {
-					await DisplayAlert(StringConst.DialogTitleError,
-						String.Format(StringConst.MessageWrongTimeSpan, "開始" + dateOrTime, "終了" + dateOrTime),
-						StringConst.DialogAnswerPositive);
-				}));
+					return false;
+				}
+			}
+			else if (this.tableDiv == TableDiv.タスク) {
+				if (this.viewModel.StartDate.CompareTo(this.viewModel.EndDate) == 1) {
 
-				return false;
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongDateTime, "開始日", "終了日"),
+							StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
+			}
+
+			// 予定毎日作業時間の数値変換チェック
+			if (this.tableDiv == TableDiv.タスク) {
+				double expectedDailyWorkTimeNum;
+				if (!double.TryParse(this.viewModel.ExpectedDailyWorkTimeText, out expectedDailyWorkTimeNum)) {
+
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongType, "作業時間", "数字"), 
+							StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
 			}
 
 			return true;
@@ -312,6 +354,50 @@ namespace TaskCards.Pages {
 				};
 
 				scheduleMemberDao.Insert(scheduleMember);
+			}
+		}
+
+		/// <summary>
+		/// タスクと所属メンバーを登録または更新する。
+		/// </summary>
+		private void InsertOrUpdateTaskAndTaskMembers() {
+
+			int expectedDailyWorkSeconds = (int)Math.Truncate(double.Parse(this.viewModel.ExpectedDailyWorkTimeText) * 3600);
+
+			var task = new Task {
+				Id = this.id,
+				Title = this.viewModel.TitleText,
+				StartDate = this.viewModel.StartDate,
+				EndDate = this.viewModel.EndDate,
+				ExpectedDailyWorkTime = new TimeSpan(0, 0, expectedDailyWorkSeconds),
+				ProjectId = this.viewModel.ProjectId,
+				Notes = this.viewModel.NotesText
+			};
+
+			var taskDao = new TaskDao();
+			var taskMemberDao = new TaskMemberDao();
+
+			// タスクの登録または更新
+			if (this.executeDiv == ExecuteDiv.追加) {
+				this.id = taskDao.Insert(task);
+			}
+			else if (this.executeDiv == ExecuteDiv.更新) {
+				this.id = taskDao.Update(task);
+
+				// 前回のタスクメンバーの削除
+				taskMemberDao.DeleteAllByTaskId(this.id);
+			}
+
+			// タスクメンバーの登録
+			foreach (long memberId in this.viewModel.MemberIdList) {
+
+				var taskMember = new TaskMember {
+					TaskId = this.id,
+					MemberId = memberId,
+					CanEdit = true // 仮に全員が編集可能に
+				};
+
+				taskMemberDao.Insert(taskMember);
 			}
 		}
 	}

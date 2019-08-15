@@ -28,6 +28,7 @@
 		// 共通メッセージ
 		public const string MessageEmpty = "入力必須です。";
 		public const string MessageEntryNeeded = "{0:s}を入力してください。";
+		public const string MessageWrongType = "{0:s}は{1:s}を入力してください。";
 		public const string MessageChangeNeeded = "{0:s}を変更してください。";
 		public const string MessageLength = "{0:d}文字以上{1:d}文字以内で入力してください。";
 		public const string MessageMaxLength = "{0:s}は{1:d}文字以内で入力してください。";
@@ -46,7 +47,7 @@
 		public const string MessageBackToTop = "TOP画面に戻ります。";
 		public const string MessageAdd = "{0:s}を追加する";
 		public const string MessageInputCancelConfirm = "入力した内容は失われます。\nキャンセルしてもよろしいですか？";
-		public const string MessageWrongTimeSpan = "{0:s}は{1:s}より\n前でなければなりません。";
+		public const string MessageWrongDateTime = "{0:s}は{1:s}より\n前でなければなりません。";
 		public const string MessageDeleteConfirm = "削除したデータは元に戻せません。\nこの{0:s}を削除しますか？";
 
 		// 固有メッセージ

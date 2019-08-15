@@ -21,6 +21,7 @@ namespace TaskCards.Pages {
 
 		bool isFirstShow = true; // 最初の表示かどうか
 		DateTime dateOfLastShownMonth; // ひとつ前に表示された月の日付
+		int lastEmptyTaskRowCount = 0; // 前日のタスク空行の数
 
 		public CalendarPage () {
 			Initialize();
@@ -50,6 +51,10 @@ namespace TaskCards.Pages {
 			var tgrAddSchedule = new TapGestureRecognizer();
 			tgrAddSchedule.Tapped += (sender, e) => OnClickAddSchedule(sender, e);
 			imgAddSchedule.GestureRecognizers.Add(tgrAddSchedule);
+
+			var tgrAddTask = new TapGestureRecognizer();
+			tgrAddTask.Tapped += (sender, e) => OnClickAddTask(sender, e);
+			imgAddTask.GestureRecognizers.Add(tgrAddTask);
 
 			// カレンダーの高さを設定
 			calenderBase.OnEndRenderCalendar += (sender, e) => {
@@ -86,7 +91,7 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
-			this.viewModel = new CalendarViewModel(cvDialogBack, lblDate, gdSchedule);
+			this.viewModel = new CalendarViewModel(cvDialogBack, lblDate, gdSchedule, gdTask);
 			BindingContext = this.viewModel;
 
 			// カレンダーの各日付イベントとタップイベントを付与
@@ -169,6 +174,18 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
+		/// タスク追加ボタンクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickAddTask(object sender, EventArgs e) {
+
+			// タスク追加用の入力ページに遷移
+			Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate,
+				TableDiv.タスク, PageDiv.カレンダー, ExecuteDiv.追加);
+		}
+
+		/// <summary>
 		/// カレンダーの各日付イベントとタップイベントを設定する。
 		/// </summary>
 		/// <param name="anyDateOfMonth">該当月の日付</param>
@@ -179,10 +196,11 @@ namespace TaskCards.Pages {
 			int firstColumn = (int)startDateOfMonth.DayOfWeek;
 			this.dateOfLastShownMonth = startDateOfMonth;
 
-			var projectDao = new ProjectDao();
-
 			var scheduleDao = new ScheduleDao();
 			Dictionary<int, List<Schedule>> scheduleMap = scheduleDao.GetMonthScheduleMap(anyDateOfMonth);
+
+			var taskDao = new TaskDao();
+			Dictionary<int, List<Task>> taskMap = taskDao.GetMonthTaskMap(anyDateOfMonth);
 
 			bool isStartWeek = true;
 			DateTime currentDate = startDateOfMonth;
@@ -204,23 +222,39 @@ namespace TaskCards.Pages {
 					};
 
 					// 日付にイベントがある場合、グリッドに３件まで表示を追加
-					if (scheduleMap.ContainsKey(currentDate.Day)) {
+					if (scheduleMap.ContainsKey(currentDate.Day) || taskMap.ContainsKey(currentDate.Day)) {
+
+						List<Schedule> scheduleList = (scheduleMap.ContainsKey(currentDate.Day)) 
+							? scheduleMap[currentDate.Day] : null;
+						List<Task> taskList = (taskMap.ContainsKey(currentDate.Day))
+							? taskMap[currentDate.Day] : null;
+
+						List <Task> lastDayTaskList = null;
+						if (currentDate.Day != startDateOfMonth.Day && taskMap.ContainsKey(currentDate.AddDays(-1).Day)) {
+							lastDayTaskList = taskMap[currentDate.AddDays(-1).Day];
+						}
+
+						List<BaseEvent> eventList = GetBaseEventListForDateCellGrid(scheduleList, taskList, lastDayTaskList);
+
+						var scheduleLabel = new Label();
 
 						int insideRow = 0; 
-						foreach (Schedule schedule in scheduleMap[currentDate.Day]) {
+						foreach (BaseEvent baseEvent in eventList) {
 
-							if (insideRow > 2) break;
-
-							Project project = projectDao.GetProjectById(schedule.ProjectId);
-
-							var label = new Label {
-								Text = schedule.Title,
-								BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv)
-							};
-
+							Label label = GetEventLabelInDateCellGrid(baseEvent, currentDate);
 							grid.Children.Add(label, 0, insideRow);
 
+							if (baseEvent != null && baseEvent.GetType() == typeof(Schedule)) {
+								scheduleLabel = label;
+							}
+
 							insideRow++;
+						}
+
+						// 前日続きのタスクによって当日のタスク表示がまったくない場合、その印を追加
+						if(eventList.Count > 2 && eventList[1] == null && eventList[2] == null) {
+							Grid.SetColumnSpan(scheduleLabel, 3);
+							grid.Children.Add(GetOverEventsLabelInDateCellGrid(), 2, 2);
 						}
 					}
 
@@ -239,6 +273,130 @@ namespace TaskCards.Pages {
 				// 当月を過ぎたらループ終了
 				if (currentDate > endDateOfMonth) break;
 			}
+		}
+
+		/// <summary>
+		/// 日付セルグリッド表示用のイベントリストを取得する。
+		/// </summary>
+		/// <param name="scheduleList">スケジュールリスト</param>
+		/// <param name="taskList">タスクリスト</param>
+		/// <param name="lastDayTaskList">前日のタスクリスト</param>
+		/// <returns>イベントリスト</returns>
+		private List<BaseEvent> GetBaseEventListForDateCellGrid(
+			List<Schedule> scheduleList, List<Task> taskList, List<Task> lastDayTaskList) {
+
+			var baseEventList = new List<BaseEvent>();
+
+			// １行目に予定を追加（なければ空行を追加）
+			if (scheduleList == null || scheduleList.Count == 0) {
+				baseEventList.Add(null);
+			}
+			else {
+				baseEventList.Add(scheduleList[0]);
+			}
+
+			if (taskList == null || taskList.Count == 0) return baseEventList;
+
+			// ２、３行目にタスクを追加
+			if (lastDayTaskList != null) {
+
+				// 前日のタスク空行の数をリセット
+				bool hasSameEvent = false;
+				foreach (Task task in taskList) {
+					if (lastDayTaskList.Where(v => v.Id == task.Id).ToList().Count != 0) hasSameEvent = true;
+				}
+				if (!hasSameEvent) this.lastEmptyTaskRowCount = 0;
+
+				int lastSameEventIndex = 0;
+				for (int i = 0; i < taskList.Count; i++) {
+
+					if (lastDayTaskList.Where(v => v.Id == taskList[i].Id).ToList().Count == 0) continue;
+
+					// 前日のタスク空行と同じ分の空行を追加
+					for (int k = 0; k < this.lastEmptyTaskRowCount; k++) {
+						baseEventList.Add(null);
+						if (baseEventList.Count > 2) break;
+					}
+					if (baseEventList.Count > 2) break;
+
+					// 前日と同じタスクがあった場合、行を合わせるため、上に必要な分の空行を追加
+					int sameEventIndex = lastDayTaskList.FindIndex(v => v.Id == taskList[i].Id);
+					for (int j = lastSameEventIndex; j < sameEventIndex; j++) {
+						baseEventList.Add(null);
+						this.lastEmptyTaskRowCount++;
+						if (baseEventList.Count > 2) break;
+					}
+					if (baseEventList.Count > 2) break;
+
+					// 前日と同じタスクを追加
+					lastSameEventIndex = sameEventIndex + 1;
+					baseEventList.Add(taskList[i]);
+					if (baseEventList.Count > 2) break;
+				}
+			}
+			else {
+				this.lastEmptyTaskRowCount = 0;
+			}
+
+			// 全部で３行に満たない場合、ある分の残りの当日タスクを追加
+			if (baseEventList.Count < 2) {
+				if (taskList.Count > 0) {
+					baseEventList.Add(taskList[0]);
+					if(taskList.Count > 1) baseEventList.Add(taskList[1]);
+				}
+			}
+			else if (baseEventList.Count < 3) {
+				if (taskList.Count > 1) baseEventList.Add(taskList[1]);
+			}
+
+			return baseEventList;
+		}
+
+		/// <summary>
+		/// 日付セルグリッド内のイベントのラベルを取得する。
+		/// </summary>
+		/// <param name="baseEvent">イベントのインスタンス</param>
+		/// <param name="currentDate">当日の日付</param>
+		/// <returns>イベントのラベル</returns>
+		private Label GetEventLabelInDateCellGrid(BaseEvent baseEvent, DateTime currentDate) {
+
+			var label = new Label();
+
+			if (baseEvent != null) {
+
+				// タスクの２日目以降はテキスト表示なし
+				if (baseEvent.StartDate.Day == currentDate.Day) label.Text = baseEvent.Title;
+
+				var projectDao = new ProjectDao();
+				Project project = projectDao.GetProjectById(baseEvent.ProjectId);
+
+				// スケジュールの場合
+				if (baseEvent.GetType() == typeof(Schedule)) {
+					label.TextColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+				}
+				// タスクの場合
+				else if (baseEvent.GetType() == typeof(Task)) {
+					label.TextColor = Color.White;
+					label.BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+					label.Opacity = 0.9;
+				}
+			}
+
+			return label;
+		}
+
+		/// <summary>
+		/// 日付セルグリッド内の表示イベント超過マークのラベルを取得する。
+		/// </summary>
+		/// <returns>表示イベント超過マークのラベル</returns>
+		private Label GetOverEventsLabelInDateCellGrid() {
+
+			return new Label {
+				Text = "+",
+				TextColor = Color.White,
+				HorizontalTextAlignment = TextAlignment.Center,
+				BackgroundColor = Color.FromHex("#6495ed")
+			};
 		}
 	}
 }

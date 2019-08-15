@@ -76,7 +76,7 @@ namespace TaskCards.Dao {
 			var entityMap = new Dictionary<int, List<Schedule>>();
 
 			DateTime startDateOfMonth = new DateTime(anyDateOfMonth.Year, anyDateOfMonth.Month, 1);
-			DateTime endDateOfMonth = (new DateTime(anyDateOfMonth.Year, anyDateOfMonth.AddMonths(1).Month, 1)).AddDays(-1);
+			DateTime startDateOfNextMonth = startDateOfMonth.AddMonths(1);
 
 			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
 				var query = new TableQuery<Schedule>(con);
@@ -87,7 +87,7 @@ namespace TaskCards.Dao {
 					con.CreateTable<Schedule>();
 
 					query = con.Table<Schedule>()
-					.Where(v => v.StartDate >= startDateOfMonth && v.StartDate <= endDateOfMonth)
+					.Where(v => v.StartDate >= startDateOfMonth && v.StartDate < startDateOfNextMonth)
 					.OrderBy(v => v.StartDate);
 				});
 

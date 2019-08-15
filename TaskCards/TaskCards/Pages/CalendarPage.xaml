@@ -153,6 +153,11 @@
 
                         <Grid Style="{StaticResource DateTappedDialogMarginGrid}">
 
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="4*" />
+                            </Grid.RowDefinitions>
+                            
                             <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
                                 <Label
                                     Style="{StaticResource DateTappedDialogSubTitleLabel}"
@@ -162,47 +167,11 @@
                                     Style="{StaticResource DateTappedDialogAddImage}" />
                             </Grid>
 
-                            <Label
-                                x:Name="lblTaskTime1"
-                                Grid.Row="1"
-                                Style="{StaticResource DateTappedDialogTimeLabel}"
-                                Text="{Binding TaskTime1Text}"/>
-
-                            <Grid x:Name="gdTaskTitle1" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
-                                    BackgroundColor="{Binding TaskTitle1Color}" />
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
-                                <Label
-                                    Style="{StaticResource DateTappedDialogTitleLabel}"
-                                    Text="{Binding TaskTitle1Text}"/>
-                                <Image
-                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
-                            </Grid>
-
-                            <Label
-                                x:Name="lblTaskTime2"
-                                Grid.Row="3"
-                                Style="{StaticResource DateTappedDialogTimeLabel}"
-                                Text="{Binding TaskTime2Text}"/>
-
-                            <Grid x:Name="gdTaskTitle2" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleBoxView}"
-                                    BackgroundColor="{Binding TaskTitle2Color}" />
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleMiddleBoxView}" />
-                                <Label
-                                    Style="{StaticResource DateTappedDialogTitleLabel}"
-                                    Text="{Binding TaskTitle2Text}"/>
-                                <Image
-                                    Style="{StaticResource DateTappedDialogTitleImage}"/>
-                                <BoxView
-                                    Style="{StaticResource DateTappedDialogTitleRightBoxView}" />
-                            </Grid>
+                            <ScrollView Grid.Row="1">
+                                <Grid x:Name="gdTask" Style="{StaticResource NoSpacingFullGrid}">
+                                    <!-- プログラムで動的にタスクを追加 -->
+                                </Grid>
+                            </ScrollView>
 
                         </Grid>
 

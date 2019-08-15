@@ -23,20 +23,6 @@ namespace TaskCards.ViewModels {
 		public ImageSource AddSource { get; set; } = ImageSource.FromResource(StringConst.ImageFolderPath + "btn_add.png");
 		public ImageSource DateTappedDialogTitleIconSource { get; set; } = ImageSource.FromResource(StringConst.ImageFolderPath + "repeat.png");
 
-		public string ScheduleTime1Text { get; set; }
-		public string ScheduleTitle1Text { get; set; }
-		public string ScheduleTime2Text { get; set; }
-		public string ScheduleTitle2Text { get; set; }
-		public string TaskTime1Text { get; set; }
-		public string TaskTitle1Text { get; set; }
-		public string TaskTime2Text { get; set; }
-		public string TaskTitle2Text { get; set; }
-
-		public Color ScheduleTitle1Color { get; set; }
-		public Color ScheduleTitle2Color { get; set; }
-		public Color TaskTitle1Color { get; set; }
-		public Color TaskTitle2Color { get; set; }
-
 		public ICommand TappedCellCommand { get; private set; }
 		public ICommand TappedScheduleCommand { get; private set; }
 		public ICommand TappedTaskCommand { get; private set; }
@@ -44,26 +30,14 @@ namespace TaskCards.ViewModels {
 		private ContentView cvDialogBack;
 		private Label lblDate;
 		private Grid gdSchedule;
+		private Grid gdTask;
 
-		public CalendarViewModel(ContentView cvDialogBack, Label lblDate, Grid gdSchedule) {
+		public CalendarViewModel(ContentView cvDialogBack, Label lblDate, Grid gdSchedule, Grid gdTask) {
 
 			this.cvDialogBack = cvDialogBack;
 			this.lblDate = lblDate;
 			this.gdSchedule = gdSchedule;
-
-			ScheduleTime1Text = "終日";
-			ScheduleTitle1Text = "スケジュール１";
-			ScheduleTime2Text = "14:00〜15:00";
-			ScheduleTitle2Text = "スケジュール２";
-			TaskTime1Text = "〜5/8(水)";
-			TaskTitle1Text = "タスク１";
-			TaskTime2Text = "〜5/2(木)";
-			TaskTitle2Text = "タスク２";
-
-			ScheduleTitle1Color = Color.FromHex("#E40000");
-			ScheduleTitle2Color = Color.FromHex("#E40000");
-			TaskTitle1Color = Color.FromHex("#E40000");
-			TaskTitle2Color = Color.FromHex("#E40000");
+			this.gdTask = gdTask;
 
 			TappedCellCommand = new Command<string>(OnTapCell);
 			TappedScheduleCommand = new Command<string>(OnTapSchedule);
@@ -122,7 +96,18 @@ namespace TaskCards.ViewModels {
 			}
 			if (scheduleList.Count == 1) this.gdSchedule.Children.Add(new Grid(), 0, scheduleIndex);
 
-			// TODO タスクを設定
+			// タスクリストを取得
+			var taskDao = new TaskDao();
+			List<Task> taskList = taskDao.GetDayTaskList(selectedDate);
+
+			// １日のタスクを設定
+			this.gdTask.Children.Clear();
+			int taskIndex = 0;
+			foreach (Task task in taskList) {
+				this.gdTask.Children.Add(GetScheduleOrTaskGrid(task), 0, taskIndex);
+				taskIndex++;
+			}
+			if (taskList.Count == 1) this.gdTask.Children.Add(new Grid(), 0, taskIndex);
 		}
 
 		/// <summary>
@@ -194,7 +179,7 @@ namespace TaskCards.ViewModels {
 		/// スケジュールまたはタスクのタイトル表示用グリッドを取得する。
 		/// </summary>
 		/// <param name="baseEvent">基底イベントの子インスタンス</param>
-		/// <param name="repeatDiv">繰り返し区分</param>
+		/// <param name="repeatDiv">（オプション）繰り返し区分。既定値は「繰り返しなし」。</param>
 		/// <returns>タイトル表示用グリッド</returns>
 		private Grid GetScheduleOrTaskTitleGrid(BaseEvent baseEvent, RepeatDiv repeatDiv = RepeatDiv.繰り返しなし) {
 

@@ -48,7 +48,7 @@
                         Style="{StaticResource InputConfirmTitleEntry}"
                         Placeholder="{StaticResource title}"/>
 
-                    <Grid x:Name="gdTime" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid x:Name="gdTime" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
                         <BoxView
                             Grid.Column="0"
                             Style="{StaticResource InputTimeBoxView}"/>
@@ -68,8 +68,16 @@
                             Grid.Column="21"
                             Style="{StaticResource InputTimeBoxView}"/>
                     </Grid>
+                    <Grid x:Name="gdDate" Grid.Row="2" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <DatePicker
+                            Style="{StaticResource InputStartDatePicker}"/>
+                        <Image
+                            Style="{StaticResource InputTimeArrowImage}"/>
+                        <DatePicker
+                            Style="{StaticResource InputEndDatePicker}"/>
+                    </Grid>
 
-                    <Grid Grid.Row="3" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid x:Name="gdAllDay" Grid.Row="3" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
                         <Label
                             Grid.Column="0"
                             Grid.ColumnSpan="5"
@@ -79,6 +87,18 @@
                             x:Name="swAllDay"
                             Grid.Column="5"
                             Toggled="OnToggleAllDay"/>
+                    </Grid>
+                    <Grid x:Name="gdExpectedDailyWorkTime" Grid.Row="3" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <Entry
+                            Grid.Column="0"
+                            Style="{StaticResource InputConfirmEntry}"
+                            Text="{Binding ExpectedDailyWorkTimeText}"
+                            Keyboard="Numeric"/>
+                        <Label
+                            Grid.Column="1"
+                            Grid.ColumnSpan="7"
+                            Style="{StaticResource InputConfirmLabel}"
+                            Text="{StaticResource dailyTime}"/>
                     </Grid>
 
                     <!--
@@ -154,10 +174,12 @@
                     -->
 
                     <Entry
+                        x:Name="etPlace"
                         Grid.Row="7"
                         Style="{StaticResource InputConfirmEntry}"
                         Text="{Binding PlaceText}"
-                        Placeholder="{StaticResource place}"/>
+                        Placeholder="{StaticResource place}"
+                        IsVisible="False"/>
 
                     <BoxView
                         Grid.Row="8"
