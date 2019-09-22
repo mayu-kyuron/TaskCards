@@ -62,7 +62,7 @@ namespace TaskCards.Dao {
 		/// </summary>
 		/// <param name="taskId">タスクID</param>
 		/// <param name="memberId">メンバーID</param>
-		public void Delete(int taskId, int memberId) {
+		public void Delete(long taskId, long memberId) {
 			var preferences = new Preferences();
 
 			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {

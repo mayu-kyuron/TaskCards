@@ -1,5 +1,6 @@
 ﻿using Acr.UserDialogs;
 using System;
+using System.Collections.Generic;
 using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
@@ -236,11 +237,26 @@ namespace TaskCards.Pages {
 		private void GoBackToExPage() {
 
 			switch (this.exPageDiv) {
+
 				case PageDiv.カレンダー:
 					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
 					break;
+
 				case PageDiv.スケジュール確認:
 					Application.Current.MainPage = new ConfirmSchedulePage(this.id);
+					break;
+
+				case PageDiv.確認:
+					switch (this.tableDiv) {
+
+						case TableDiv.タスク:
+							Application.Current.MainPage = new ConfirmPage(this.selectedDate, 
+								TableDiv.タスク, PageDiv.カレンダー, this.id);
+							break;
+
+						case TableDiv.プロジェクト:
+							break;
+					}
 					break;
 			}
 		}
@@ -288,14 +304,53 @@ namespace TaskCards.Pages {
 				}
 			}
 
-			// 予定毎日作業時間の数値変換チェック
 			if (this.tableDiv == TableDiv.タスク) {
 				double expectedDailyWorkTimeNum;
+
+				// 予定毎日作業時間の数値変換チェック
 				if (!double.TryParse(this.viewModel.ExpectedDailyWorkTimeText, out expectedDailyWorkTimeNum)) {
 
 					Device.BeginInvokeOnMainThread((async () => {
 						await DisplayAlert(StringConst.DialogTitleError,
 							String.Format(StringConst.MessageWrongType, "作業時間", "数字"), 
+							StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
+
+				// 予定毎日作業時間の整数の最大値チェック
+				if (expectedDailyWorkTimeNum > 24) {
+
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongType, "作業時間", "24以下の数字"),
+							StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
+
+				// 予定毎日作業時間の正の数チェック
+				if (expectedDailyWorkTimeNum < 0) {
+
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongType, "作業時間", "0以上の数字"),
+							StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
+
+				// 予定毎日作業時間の小数点以下桁数チェック
+				string expectedDailyWorkTimeStr = expectedDailyWorkTimeNum.ToString().TrimEnd('0');
+				int index = expectedDailyWorkTimeStr.IndexOf('.');
+				if (index != -1 && expectedDailyWorkTimeStr.Substring(index + 1).Length > 2) {
+
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageWrongType, "作業時間", "小数点以下第二位までの数字"),
 							StringConst.DialogAnswerPositive);
 					}));
 
@@ -376,13 +431,24 @@ namespace TaskCards.Pages {
 
 			var taskDao = new TaskDao();
 			var taskMemberDao = new TaskMemberDao();
+			var taskProgressDao = new TaskProgressDao();
+
+			var lastTaskMemberList = new List<TaskMember>();
+			var currentTaskMemberMap = new Dictionary<long, TaskMember>();
 
 			// タスクの登録または更新
 			if (this.executeDiv == ExecuteDiv.追加) {
 				this.id = taskDao.Insert(task);
 			}
 			else if (this.executeDiv == ExecuteDiv.更新) {
+				Task lastTask = taskDao.GetTaskById(this.id);
+
+				task.TotalWorkTime = lastTask.TotalWorkTime;
+				task.ProgressRate = lastTask.ProgressRate;
+
 				this.id = taskDao.Update(task);
+
+				lastTaskMemberList = taskMemberDao.GetTaskMemberListByTaskId(this.id);
 
 				// 前回のタスクメンバーの削除
 				taskMemberDao.DeleteAllByTaskId(this.id);
@@ -398,6 +464,30 @@ namespace TaskCards.Pages {
 				};
 
 				taskMemberDao.Insert(taskMember);
+			}
+
+			List<TaskMember> currentTaskMemberList = taskMemberDao.GetTaskMemberListByTaskId(this.id);
+			foreach (TaskMember currentTaskMember in currentTaskMemberList) {
+				currentTaskMemberMap.Add(currentTaskMember.MemberId, currentTaskMember);
+			}
+
+			// タスク進捗の更新または削除
+			foreach (TaskMember lastTaskMember in lastTaskMemberList) {
+				List<TaskProgress> taskProgressList = taskProgressDao.GetTaskProgressListByTaskMemberId(lastTaskMember.Id);
+
+				if (currentTaskMemberMap.ContainsKey(lastTaskMember.MemberId)) {
+					TaskMember currentTaskMember = currentTaskMemberMap[lastTaskMember.MemberId];
+
+					foreach (TaskProgress taskProgress in taskProgressList) {
+						taskProgress.TaskMemberId = currentTaskMember.Id;
+						taskProgressDao.Update(taskProgress);
+					}
+				}
+				else {
+					foreach (TaskProgress taskProgress in taskProgressList) {
+						taskProgressDao.Delete(taskProgress.TaskMemberId);
+					}
+				}
 			}
 		}
 	}

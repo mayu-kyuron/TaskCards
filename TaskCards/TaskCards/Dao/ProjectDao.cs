@@ -53,5 +53,23 @@ namespace TaskCards.Dao {
 				});
 			}
 		}
+
+		/// <summary>
+		/// プロジェクトを削除する。
+		/// </summary>
+		/// <param name="id">ID</param>
+		public void Delete(long id) {
+			var preferences = new Preferences();
+
+			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+
+				// 自動マイグレーション
+				con.CreateTable<Project>();
+
+				Project project = (from p in con.Table<Project>() where p.Id == id select p).FirstOrDefault();
+
+				if (project != null) con.Delete(project);
+			}
+		}
 	}
 }

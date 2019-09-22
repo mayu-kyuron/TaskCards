@@ -75,7 +75,9 @@ namespace TaskCards.ViewModels {
 		/// <param name="idStr">ID（文字列）</param>
 		private void OnTapTask(string idStr) {
 
-
+			// タスクの確認ページに遷移
+			Application.Current.MainPage = new ConfirmPage(selectedDate, 
+				TableDiv.タスク, PageDiv.カレンダー, long.Parse(idStr));
 		}
 
 		/// <summary>

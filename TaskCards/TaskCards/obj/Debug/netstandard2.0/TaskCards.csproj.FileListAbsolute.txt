@@ -5,9 +5,11 @@ D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCar
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.csproj.CoreCompileInputs.cache
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.App.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.CalendarPage.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.ConfirmPage.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.ConfirmSchedulePage.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.DetailPage.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.InputPage.xaml.g.cs
+D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.InputWorkPage.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.Pages.TaskPage.xaml.g.cs
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.AssemblyInfoInputs.cache
 D:\XamarinProject\TaskCards\TaskCards\TaskCards\obj\Debug\netstandard2.0\TaskCards.AssemblyInfo.cs

@@ -6,7 +6,10 @@ using Xamarin.Forms;
 
 namespace TaskCards.ViewModels {
 
-    public class ConfirmScheduleViewModel {
+	/// <summary>
+	/// スケジュール確認ページのビューモデル
+	/// </summary>
+	public class ConfirmScheduleViewModel {
 
 		public double DialogBaseHeight { get; set; }
 		public double MemberHeight { get; set; }
@@ -28,8 +31,7 @@ namespace TaskCards.ViewModels {
 		public long ProjectId { get; set; }
 		public List<long> MemberIdList { get; set; } = new List<long>();
 
-		public ConfirmScheduleViewModel(long scheduleId, double height, 
-			ContentView cvDialogBack, Grid gdTime, Label lblAllDay, ResourceDictionary resources) {
+		public ConfirmScheduleViewModel(long scheduleId, double height, Grid gdTime, Label lblAllDay) {
 
 			// レイアウト全体の高さの設定
 			// 項目を増やすごとに、デバイスの高さに対して項目の高さ分、掛ける割合を増やしていく。

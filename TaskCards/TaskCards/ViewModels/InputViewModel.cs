@@ -84,6 +84,7 @@ namespace TaskCards.ViewModels {
 							SetAddScheduleOrTask(tableDiv, selectedDate);
 							break;
 						case ExecuteDiv.更新:
+							SetEditTask(id);
 							break;
 					}
 					break;
@@ -172,6 +173,35 @@ namespace TaskCards.ViewModels {
 			// TODO 全メンバーIDを設定。全メンバー名も画面表示用に要設定
 			foreach (ScheduleMember scheduleMember in scheduleMemberList) {
 				MemberIdList.Add(scheduleMember.MemberId);
+			}
+		}
+
+		/// <summary>
+		/// タスク編集時の項目を設定する。
+		/// </summary>
+		/// <param name="id">ID</param>
+		private void SetEditTask(long id) {
+
+			TaskDao taskDao = new TaskDao();
+			Task task = taskDao.GetTaskById(id);
+
+			ProjectDao projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(task.ProjectId);
+
+			TaskMemberDao taskMemberDao = new TaskMemberDao();
+			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(task.Id);
+
+			TitleText = task.Title;
+			StartDate = task.StartDate;
+			EndDate = task.EndDate;
+			ProjectId = project.Id;
+			ProjectText = project.Title;
+			ExpectedDailyWorkTimeText = task.ExpectedDailyWorkTime.TotalHours.ToString();
+			NotesText = task.Notes;
+
+			// TODO 全メンバーIDを設定。全メンバー名も画面表示用に要設定
+			foreach (TaskMember taskMember in taskMemberList) {
+				MemberIdList.Add(taskMember.MemberId);
 			}
 		}
 

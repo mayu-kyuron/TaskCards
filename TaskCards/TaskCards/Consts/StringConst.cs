@@ -10,6 +10,8 @@
 
 		// 用語
 		public const string WordSchedule = "スケジュール";
+		public const string WordTask = "タスク";
+		public const string WordProject = "プロジェクト";
 
 		// ダイアログタイトル
 		public const string DialogTitleConfirm = "確認";
@@ -69,6 +71,7 @@
 
 		// DateTimeフォーマット
 		public const string DateTappedDialogDateFormat = "yyyy年MM月dd日(ddd)";
+		public const string InputConfirmDateFormat = "MM月dd日(ddd)";
 		public const string InputConfirmTimeFormat = "HH:mm";
 
 		// 繰り返しタイプ
@@ -77,5 +80,8 @@
 		public const string RepeatEveryWeek = "毎週";
 		public const string RepeatEveryMonth = "毎月";
 		public const string RepeatEveryYear = "毎年";
+
+		// 各項目の固定テキスト
+		public const string ItemTextDailyTime = "時間 / 日";
 	}
 }
