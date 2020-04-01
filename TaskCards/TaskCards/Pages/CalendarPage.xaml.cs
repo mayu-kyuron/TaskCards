@@ -21,7 +21,8 @@ namespace TaskCards.Pages {
 
 		bool isFirstShow = true; // 最初の表示かどうか
 		DateTime dateOfLastShownMonth; // ひとつ前に表示された月の日付
-		int lastEmptyTaskRowCount = 0; // 前日のタスク空行の数
+		int lastEmptyTaskTopRowCount = 0; // 前日の上段タスク空行の数
+		int lastEmptyTaskMiddleRowCount = 0; // 前日の中段タスク空行の数
 
 		public CalendarPage () {
 			Initialize();
@@ -305,15 +306,19 @@ namespace TaskCards.Pages {
 				foreach (Task task in taskList) {
 					if (lastDayTaskList.Where(v => v.Id == task.Id).ToList().Count != 0) hasSameEvent = true;
 				}
-				if (!hasSameEvent) this.lastEmptyTaskRowCount = 0;
+				if (!hasSameEvent) {
+					this.lastEmptyTaskTopRowCount = 0;
+					this.lastEmptyTaskMiddleRowCount = 0;
+				}
 
+				// TODO カレンダー表示上、複数タスクの間に空行が入った場合も上に空行を入れてしまうバグを直す。
 				int lastSameEventIndex = 0;
 				for (int i = 0; i < taskList.Count; i++) {
 
 					if (lastDayTaskList.Where(v => v.Id == taskList[i].Id).ToList().Count == 0) continue;
 
 					// 前日のタスク空行と同じ分の空行を追加
-					for (int k = 0; k < this.lastEmptyTaskRowCount; k++) {
+					for (int k = 0; k < this.lastEmptyTaskTopRowCount; k++) {
 						baseEventList.Add(null);
 						if (baseEventList.Count > 2) break;
 					}
@@ -323,7 +328,7 @@ namespace TaskCards.Pages {
 					int sameEventIndex = lastDayTaskList.FindIndex(v => v.Id == taskList[i].Id);
 					for (int j = lastSameEventIndex; j < sameEventIndex; j++) {
 						baseEventList.Add(null);
-						this.lastEmptyTaskRowCount++;
+						this.lastEmptyTaskTopRowCount++;
 						if (baseEventList.Count > 2) break;
 					}
 					if (baseEventList.Count > 2) break;
@@ -335,7 +340,7 @@ namespace TaskCards.Pages {
 				}
 			}
 			else {
-				this.lastEmptyTaskRowCount = 0;
+				this.lastEmptyTaskTopRowCount = 0;
 			}
 
 			// 全部で３行に満たない場合、ある分の残りの当日タスクを追加
@@ -365,7 +370,7 @@ namespace TaskCards.Pages {
 			if (baseEvent != null) {
 
 				// タスクの２日目以降はテキスト表示なし
-				if (baseEvent.StartDate.Day == currentDate.Day) label.Text = baseEvent.Title;
+				if (baseEvent.StartDate == currentDate) label.Text = baseEvent.Title;
 
 				var projectDao = new ProjectDao();
 				Project project = projectDao.GetProjectById(baseEvent.ProjectId);

@@ -87,16 +87,19 @@ namespace TaskCards.Dao {
 					con.CreateTable<Task>();
 
 					query = con.Table<Task>()
-					.Where(v => v.StartDate >= startDateOfMonth && v.StartDate < startDateOfNextMonth)
+					.Where(v => v.EndDate >= startDateOfMonth && v.StartDate < startDateOfNextMonth)
 					.OrderBy(v => v.StartDate);
 				});
 
 				// 日付をキーに、同日のタスクリストをマップに格納する。
 				for (int i = 1; i <= 31; i++) {
 
+					if (i > startDateOfNextMonth.AddDays(-1).Day) break;
+
+					DateTime dateTime = new DateTime(anyDateOfMonth.Year, anyDateOfMonth.Month, i);
+
 					List<Task> taskList = query.ToList()
-						.Where(v => v.StartDate.Day <= i && (v.EndDate.Day >= i 
-						|| v.EndDate.Month > anyDateOfMonth.Month || v.EndDate.Year > anyDateOfMonth.Year))
+						.Where(v => v.StartDate <= dateTime && v.EndDate >= dateTime)
 						.ToList();
 
 					if (taskList.Count == 0) continue; 
