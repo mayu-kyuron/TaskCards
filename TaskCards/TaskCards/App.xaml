@@ -105,7 +105,7 @@
             <Style x:Key="TopRightButtonImage" TargetType="{x:Type Image}">
                 <Setter Property="Grid.Column" Value="6" />
                 <Setter Property="Source" Value="{Binding TopRightButtonSource}" />
-                <Setter Property="Aspect" Value="Fill" />
+                <Setter Property="Aspect" Value="AspectFit" />
             </Style>
 
             <Style x:Key="DateTappedDialogMainGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
@@ -128,7 +128,7 @@
             <Style x:Key="DateTappedDialogAddImage" TargetType="{x:Type Image}">
                 <Setter Property="Grid.Column" Value="6" />
                 <Setter Property="Source" Value="{Binding AddSource}" />
-                <Setter Property="Aspect" Value="Fill" />
+                <Setter Property="Aspect" Value="AspectFit" />
             </Style>
 
             <Style x:Key="DateTappedDialogTimeLabel" TargetType="{x:Type Label}">

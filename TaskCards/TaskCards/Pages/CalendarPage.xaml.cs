@@ -17,12 +17,14 @@ namespace TaskCards.Pages {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CalendarPage : ContentPage {
 
+		const int CalendarDayEventMax = 3; // カレンダー日付上に表示するイベントの最大数
+
 		CalendarViewModel viewModel;
 
 		bool isFirstShow = true; // 最初の表示かどうか
 		DateTime dateOfLastShownMonth; // ひとつ前に表示された月の日付
-		int lastEmptyTaskTopRowCount = 0; // 前日の上段タスク空行の数
-		int lastEmptyTaskMiddleRowCount = 0; // 前日の中段タスク空行の数
+		long lastTopTaskId = 0; // 前日の最上段のタスクID
+		Dictionary<int, int> lastEmptyTaskRowCountMap = new Dictionary<int, int>(); // 前日のタスク空行数のマップ
 
 		public CalendarPage () {
 			Initialize();
@@ -288,6 +290,7 @@ namespace TaskCards.Pages {
 
 			var baseEventList = new List<BaseEvent>();
 
+			// TODO 予定が表示されるか要確認。
 			// １行目に予定を追加（なければ空行を追加）
 			if (scheduleList == null || scheduleList.Count == 0) {
 				baseEventList.Add(null);
@@ -296,61 +299,149 @@ namespace TaskCards.Pages {
 				baseEventList.Add(scheduleList[0]);
 			}
 
-			if (taskList == null || taskList.Count == 0) return baseEventList;
-
-			// ２、３行目にタスクを追加
-			if (lastDayTaskList != null) {
-
-				// 前日のタスク空行の数をリセット
-				bool hasSameEvent = false;
-				foreach (Task task in taskList) {
-					if (lastDayTaskList.Where(v => v.Id == task.Id).ToList().Count != 0) hasSameEvent = true;
-				}
-				if (!hasSameEvent) {
-					this.lastEmptyTaskTopRowCount = 0;
-					this.lastEmptyTaskMiddleRowCount = 0;
-				}
-
-				// TODO カレンダー表示上、複数タスクの間に空行が入った場合も上に空行を入れてしまうバグを直す。
-				int lastSameEventIndex = 0;
-				for (int i = 0; i < taskList.Count; i++) {
-
-					if (lastDayTaskList.Where(v => v.Id == taskList[i].Id).ToList().Count == 0) continue;
-
-					// 前日のタスク空行と同じ分の空行を追加
-					for (int k = 0; k < this.lastEmptyTaskTopRowCount; k++) {
-						baseEventList.Add(null);
-						if (baseEventList.Count > 2) break;
-					}
-					if (baseEventList.Count > 2) break;
-
-					// 前日と同じタスクがあった場合、行を合わせるため、上に必要な分の空行を追加
-					int sameEventIndex = lastDayTaskList.FindIndex(v => v.Id == taskList[i].Id);
-					for (int j = lastSameEventIndex; j < sameEventIndex; j++) {
-						baseEventList.Add(null);
-						this.lastEmptyTaskTopRowCount++;
-						if (baseEventList.Count > 2) break;
-					}
-					if (baseEventList.Count > 2) break;
-
-					// 前日と同じタスクを追加
-					lastSameEventIndex = sameEventIndex + 1;
-					baseEventList.Add(taskList[i]);
-					if (baseEventList.Count > 2) break;
-				}
-			}
-			else {
-				this.lastEmptyTaskTopRowCount = 0;
-			}
+			// ２、３行目にタスクor空行を追加
+			baseEventList = AddEmptiesAndTasksForDateCellGrid(baseEventList, taskList, lastDayTaskList);
 
 			// 全部で３行に満たない場合、ある分の残りの当日タスクを追加
-			if (baseEventList.Count < 2) {
-				if (taskList.Count > 0) {
-					baseEventList.Add(taskList[0]);
-					if(taskList.Count > 1) baseEventList.Add(taskList[1]);
-				}
+			baseEventList = AddLeftoverTasksForDateCellGrid(baseEventList, taskList);
+
+			return baseEventList;
+		}
+
+		/// <summary>
+		/// 日付セルグリッド表示用のイベントリストにタスクまたは空行を追加する。
+		/// </summary>
+		/// <param name="baseEventList">イベントリスト</param>
+		/// <param name="taskList">タスクリスト</param>
+		/// <param name="lastDayTaskList">前日のタスクリスト</param>
+		/// <returns>イベントリスト</returns>
+		private List<BaseEvent> AddEmptiesAndTasksForDateCellGrid(
+			List<BaseEvent> baseEventList, List<Task> taskList, List<Task> lastDayTaskList) {
+
+			if (taskList == null || taskList.Count == 0 || ClearLastEmptyTaskRowCount(taskList, lastDayTaskList)) {
+				return baseEventList;
 			}
-			else if (baseEventList.Count < 3) {
+
+			int lastSameEventIndex = 0;
+			for (int i = 0; i < taskList.Count; i++) {
+
+				if (lastDayTaskList.Where(v => v.Id == taskList[i].Id).ToList().Count == 0) continue;
+
+				ResetLastEmptyMiddleTaskCountToTop(taskList, lastDayTaskList);
+
+				// 前日のタスク空行と同じ分の空行を追加
+				if (i == 0) {
+					if (this.lastEmptyTaskRowCountMap.ContainsKey(0)) {
+						for (int k = 0; k < this.lastEmptyTaskRowCountMap[0]; k++) {
+							baseEventList.Add(null);
+							if (baseEventList.Count >= CalendarDayEventMax) break;
+						}
+						if (baseEventList.Count >= CalendarDayEventMax) break;
+					}
+				}
+				else if (this.lastEmptyTaskRowCountMap.ContainsKey(1)) {
+					for (int k = 0; k < this.lastEmptyTaskRowCountMap[1]; k++) {
+						baseEventList.Add(null);
+						if (baseEventList.Count >= CalendarDayEventMax) break;
+					}
+					if (baseEventList.Count >= CalendarDayEventMax) break;
+				}
+
+				// 前日と同じタスクがあった場合、行を合わせるため、上に必要な分の空行を追加
+				int sameEventIndex = lastDayTaskList.FindIndex(v => v.Id == taskList[i].Id);
+				for (int j = lastSameEventIndex; j < sameEventIndex; j++) {
+					if (lastSameEventIndex == 0) {
+						AddLastEmptyTaskRowCount(0);
+					}
+					else {
+						AddLastEmptyTaskRowCount(1);
+					}
+					baseEventList.Add(null);
+					if (baseEventList.Count >= CalendarDayEventMax) break;
+				}
+				if (baseEventList.Count >= CalendarDayEventMax) break;
+
+				// 前日と同じタスクを追加
+				lastSameEventIndex = sameEventIndex + 1;
+				baseEventList.Add(taskList[i]);
+				if (baseEventList.Count >= CalendarDayEventMax) break;
+			}
+
+			return baseEventList;
+		}
+
+		/// <summary>
+		/// 前日のタスク空行数をクリアする。
+		/// </summary>
+		/// <param name="taskList">タスクリスト</param>
+		/// <param name="lastDayTaskList">前日のタスクリスト</param>
+		/// <returns>処理を切り上げる場合は true、そのまま続行の場合は false</returns>
+		private bool ClearLastEmptyTaskRowCount(List<Task> taskList, List<Task> lastDayTaskList) {
+
+			if (lastDayTaskList == null) {
+				this.lastEmptyTaskRowCountMap.Clear();
+				return true;
+			}
+
+			bool hasSameEvent = false;
+			foreach (Task task in taskList) {
+				if (lastDayTaskList.Where(v => v.Id == task.Id).ToList().Count != 0) hasSameEvent = true;
+			}
+			if (!hasSameEvent) this.lastEmptyTaskRowCountMap.Clear();
+
+			return false;
+		}
+
+		/// <summary>
+		/// 前日のタスク中段空行数を上段用に設定し直す。
+		/// </summary>
+		/// <param name="taskList">タスクリスト</param>
+		/// <param name="lastDayTaskList">前日のタスクリスト</param>
+		private void ResetLastEmptyMiddleTaskCountToTop(List<Task> taskList, List<Task> lastDayTaskList) {
+
+			// 複数タスクの間に空行がある状態から、最上段タスクがなくなった場合に、中段の空行数を上段の空行数として設定し直す。
+			if (lastDayTaskList[0].Id == this.lastTopTaskId && taskList[0].Id != this.lastTopTaskId
+								&& this.lastEmptyTaskRowCountMap.ContainsKey(1)) {
+
+				if (!this.lastEmptyTaskRowCountMap.ContainsKey(0)) this.lastEmptyTaskRowCountMap.Add(0, 0);
+
+				this.lastEmptyTaskRowCountMap[0] = this.lastEmptyTaskRowCountMap[1];
+				this.lastEmptyTaskRowCountMap.Remove(1);
+			}
+		}
+
+		/// <summary>
+		/// 前日のタスク空行数を追加する。
+		/// </summary>
+		/// <param name="countMapKey">前日タスク空行数マップのキー</param>
+		private void AddLastEmptyTaskRowCount(int countMapKey) {
+
+			if (this.lastEmptyTaskRowCountMap.ContainsKey(countMapKey)) {
+				this.lastEmptyTaskRowCountMap[countMapKey]++;
+			}
+			else {
+				this.lastEmptyTaskRowCountMap.Add(countMapKey, 1);
+			}
+		}
+
+		/// <summary>
+		/// 日付セルグリッド表示用のイベントリストに残りのタスクを追加する。
+		/// </summary>
+		/// <param name="baseEventList">イベントリスト</param>
+		/// <param name="taskList">タスクリスト</param>
+		/// <returns>イベントリスト</returns>
+		private List<BaseEvent> AddLeftoverTasksForDateCellGrid(List<BaseEvent> baseEventList, List<Task> taskList) {
+
+			if (taskList == null || taskList.Count == 0) return baseEventList;
+
+			if (baseEventList.Count < CalendarDayEventMax - 1) {
+				if (taskList.Count == 0) return baseEventList;
+
+				this.lastTopTaskId = taskList[0].Id;
+				baseEventList.Add(taskList[0]);
+				if (taskList.Count > 1) baseEventList.Add(taskList[1]);
+			}
+			else if (baseEventList.Count < CalendarDayEventMax) {
 				if (taskList.Count > 1) baseEventList.Add(taskList[1]);
 			}
 
@@ -369,6 +460,7 @@ namespace TaskCards.Pages {
 
 			if (baseEvent != null) {
 
+				// TODO 月の初日はテキスト表示する。
 				// タスクの２日目以降はテキスト表示なし
 				if (baseEvent.StartDate == currentDate) label.Text = baseEvent.Title;
 
