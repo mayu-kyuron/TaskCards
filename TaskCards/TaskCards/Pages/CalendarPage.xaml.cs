@@ -458,25 +458,23 @@ namespace TaskCards.Pages {
 
 			var label = new Label();
 
-			if (baseEvent != null) {
+			if (baseEvent == null) return label;
 
-				// TODO 月の初日はテキスト表示する。
-				// タスクの２日目以降はテキスト表示なし
-				if (baseEvent.StartDate == currentDate) label.Text = baseEvent.Title;
+			// タスクの２日目以降はテキスト表示なし
+			if (baseEvent.StartDate == currentDate || currentDate.Day == 1) label.Text = baseEvent.Title;
 
-				var projectDao = new ProjectDao();
-				Project project = projectDao.GetProjectById(baseEvent.ProjectId);
+			var projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(baseEvent.ProjectId);
 
-				// スケジュールの場合
-				if (baseEvent.GetType() == typeof(Schedule)) {
-					label.TextColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
-				}
-				// タスクの場合
-				else if (baseEvent.GetType() == typeof(Task)) {
-					label.TextColor = Color.White;
-					label.BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
-					label.Opacity = 0.9;
-				}
+			// スケジュールの場合
+			if (baseEvent.GetType() == typeof(Schedule)) {
+				label.TextColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+			}
+			// タスクの場合
+			else if (baseEvent.GetType() == typeof(Task)) {
+				label.TextColor = Color.White;
+				label.BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+				label.Opacity = 0.9;
 			}
 
 			return label;
