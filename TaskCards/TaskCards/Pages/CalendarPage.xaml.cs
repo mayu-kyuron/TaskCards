@@ -290,7 +290,6 @@ namespace TaskCards.Pages {
 
 			var baseEventList = new List<BaseEvent>();
 
-			// TODO 予定が表示されるか要確認。
 			// １行目に予定を追加（なければ空行を追加）
 			if (scheduleList == null || scheduleList.Count == 0) {
 				baseEventList.Add(null);
@@ -461,7 +460,7 @@ namespace TaskCards.Pages {
 			if (baseEvent == null) return label;
 
 			// タスクの２日目以降はテキスト表示なし
-			if (baseEvent.StartDate == currentDate || currentDate.Day == 1) label.Text = baseEvent.Title;
+			if (baseEvent.StartDate.Date == currentDate.Date || currentDate.Day == 1) label.Text = baseEvent.Title;
 
 			var projectDao = new ProjectDao();
 			Project project = projectDao.GetProjectById(baseEvent.ProjectId);
