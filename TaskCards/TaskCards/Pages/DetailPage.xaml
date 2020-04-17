@@ -10,13 +10,11 @@
                 <page:CalendarPage/>
             </x:Arguments>
         </NavigationPage>
-        <!--
-        <NavigationPage Title="{StaticResource task}">
+        <NavigationPage Title="{StaticResource task}" Icon="task">
             <x:Arguments>
                 <page:TaskPage/>
             </x:Arguments>
         </NavigationPage>
-        -->
     </TabbedPage.Children>
 
 </TabbedPage>

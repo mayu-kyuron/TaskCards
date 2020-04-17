@@ -2991,7 +2991,10 @@ namespace TaskCards.Droid
 			public const int splash_screen = 2131231020;
 			
 			// aapt resource value: 0x7F08012D
-			public const int verify_checkmark = 2131231021;
+			public const int task = 2131231021;
+			
+			// aapt resource value: 0x7F08012E
+			public const int verify_checkmark = 2131231022;
 			
 			static Drawable()
 			{
