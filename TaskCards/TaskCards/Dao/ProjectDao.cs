@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using System.Collections.Generic;
+using SQLite;
 using TaskCards.Data;
 using TaskCards.Entities;
 
@@ -34,6 +35,28 @@ namespace TaskCards.Dao {
 			}
 
 			return entity;
+		}
+
+		/// <summary>
+		/// メンバーIDよりプロジェクトリストを取得する。
+		/// </summary>
+		/// <param name="memberId">メンバーID</param>
+		/// <returns>プロジェクトリスト</returns>
+		public List<Project> GetProjectListByMemberId(long memberId) {
+			var entityList = new List<Project>();
+
+			var projectMemberDao = new ProjectMemberDao();
+			List<ProjectMember> projectMemberList = projectMemberDao.GetProjectMemberListByMemberId(memberId);
+
+			foreach(ProjectMember projectMember in projectMemberList) {
+
+				Project entity = GetProjectById(projectMember.ProjectId);
+				if (entity == null) continue;
+
+				entityList.Add(entity);
+			}
+
+			return entityList;
 		}
 
 		/// <summary>

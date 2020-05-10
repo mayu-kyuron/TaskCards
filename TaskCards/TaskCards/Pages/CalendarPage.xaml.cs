@@ -65,26 +65,41 @@ namespace TaskCards.Pages {
 			};
 
 			// TODO 仮のプロジェクトを追加
-			long id = 1;
+			long projectId = 1;
 			ProjectDao projectDao = new ProjectDao();
-			Project project = projectDao.GetProjectById(id);
+			Project project = projectDao.GetProjectById(projectId);
 			if (project == null) {
 				Project myProject = new Project();
-				myProject.Id = id;
+				myProject.Id = projectId;
 				myProject.Title = "プロジェクトA";
 				myProject.ColorDiv = ColorDiv.赤;
 				projectDao.Insert(myProject);
 			}
 
 			// TODO メンバーに仮の自分を追加
-			long id2 = 1;
+			long memberId = 1;
 			MemberDao memberDao = new MemberDao();
-			Member member = memberDao.GetMemberById(id2);
+			Member member = memberDao.GetMemberById(memberId);
 			if (member == null) {
 				Member myMember = new Member();
-				myMember.Id = id2;
+				myMember.Id = memberId;
 				myMember.Name = "メンバー1";
 				memberDao.Insert(myMember);
+			}
+
+			// TODO プロジェクトメンバーに仮の自分を追加
+			var projectMemberDao = new ProjectMemberDao();
+			List<ProjectMember> projectMemberList = projectMemberDao.GetProjectMemberListByProjectId(projectId);
+			bool isExisting = false;
+			foreach (ProjectMember projectMember in projectMemberList) {
+				if (projectMember.MemberId == memberId) isExisting = true;
+			}
+			if (!isExisting) {
+				var myProjectMember = new ProjectMember();
+				myProjectMember.ProjectId = projectId;
+				myProjectMember.MemberId = memberId;
+				myProjectMember.CanEdit = true;
+				projectMemberDao.Insert(myProjectMember);
 			}
 		}
 

@@ -6,6 +6,7 @@ using TaskCards.Dao;
 using TaskCards.Divisions;
 using TaskCards.Dtos;
 using TaskCards.Entities;
+using TaskCards.Utilities;
 using Xamarin.Forms;
 
 namespace TaskCards.ViewModels {
@@ -15,9 +16,14 @@ namespace TaskCards.ViewModels {
 	/// </summary>
 	public class InputViewModel {
 
+		public const long NotSelectedProjectId = -1;
+		public const string RepeatTextKey = "RepeatText";
+		public const string ProjectTextKey = "ProjectText";
+
 		public List<SelectedItemDto> RepeatItems { protected set; get; } = new List<SelectedItemDto>();
 
 		public ICommand SelectedRepeatCommand { get; set; }
+		public ICommand SelectedProjectCommand { get; private set; }
 
 		public double DialogBaseHeight { get; set; }
 		public double MemberHeight { get; set; }
@@ -32,10 +38,8 @@ namespace TaskCards.ViewModels {
 		public string TopDateText { get; set; }
 		public string TitleText { get; set; }
 		public string ExpectedDailyWorkTimeText { get; set; }
-		public string ProjectText { get; set; }
 		public string Member1Text { get; set; }
 		public string AddText { get; set; }
-		public string RepeatText { get; set; }
 		public string PlaceText { get; set; }
 		public string NotesText { get; set; }
 
@@ -47,8 +51,19 @@ namespace TaskCards.ViewModels {
 		public List<long> MemberIdList { get; set; } = new List<long>();
 		public RepeatDiv RepeatDiv { get; set; }
 
+		private ContentView cvDialogBack;
+		private Grid gdDialogRepeat;
+		private Grid gdDialogProject;
+		private ResourceDictionary resources;
+
 		public InputViewModel(DateTime selectedDate, TableDiv tableDiv, ExecuteDiv executeDiv, long id,
-			double height, ContentView cvDialogBack, Switch swAllDay, ResourceDictionary resources) {
+			double height, ContentView cvDialogBack, Grid gdDialogRepeat, Grid gdDialogProject, Grid gdProjects,
+			Switch swAllDay, ResourceDictionary resources) {
+
+			this.cvDialogBack = cvDialogBack;
+			this.gdDialogRepeat = gdDialogRepeat;
+			this.gdDialogProject = gdDialogProject;
+			this.resources = resources;
 
 			// レイアウト全体の高さの設定
 			// 項目を増やすごとに、デバイスの高さに対して項目の高さ分、掛ける割合を増やしていく。
@@ -62,7 +77,10 @@ namespace TaskCards.ViewModels {
 			TopDateText = selectedDate.ToString(StringConst.DateTappedDialogDateFormat);
 			AddText = String.Format(StringConst.MessageAdd, "メンバー");
 			RepeatDiv = RepeatDiv.繰り返しなし;
-			resources["RepeatText"] = StringConst.RepeatNone;
+			this.resources[RepeatTextKey] = StringConst.RepeatNone;
+
+			// プロジェクト項目を設定
+			List<Project> projectList = SetProjectsInDialog(gdProjects);
 
 			// テーブル区分・実行区分ごとに項目を設定
 			switch (tableDiv) {
@@ -70,10 +88,10 @@ namespace TaskCards.ViewModels {
 				case TableDiv.予定:
 					switch (executeDiv) {
 						case ExecuteDiv.追加:
-							SetAddScheduleOrTask(tableDiv, selectedDate);
+							SetAddScheduleOrTask(tableDiv, selectedDate, projectList);
 							break;
 						case ExecuteDiv.更新:
-							SetEditSchedule(id, swAllDay, resources);
+							SetEditSchedule(id, swAllDay);
 							break;
 					}
 					break;
@@ -81,7 +99,7 @@ namespace TaskCards.ViewModels {
 				case TableDiv.タスク:
 					switch (executeDiv) {
 						case ExecuteDiv.追加:
-							SetAddScheduleOrTask(tableDiv, selectedDate);
+							SetAddScheduleOrTask(tableDiv, selectedDate, projectList);
 							break;
 						case ExecuteDiv.更新:
 							SetEditTask(id);
@@ -104,15 +122,35 @@ namespace TaskCards.ViewModels {
 			// 繰り返しコマンドを設定
 			this.SelectedRepeatCommand = new Command<SelectedItemDto>((selectedItemDto) => {
 				RepeatDiv = (RepeatDiv)selectedItemDto.Id;
-				resources["RepeatText"] = selectedItemDto.Name;
-				cvDialogBack.IsVisible = false;
+				this.resources[RepeatTextKey] = selectedItemDto.Name;
+				this.cvDialogBack.IsVisible = false;
+				this.gdDialogRepeat.IsVisible = false;
 			});
+
+			// プロジェクトコマンドを設定
+			SelectedProjectCommand = new Command<string>(OnSelectProject);
+		}
+
+		/// <summary>
+		/// プロジェクト選択イベント
+		/// </summary>
+		/// <param name="idStr">ID（文字列）</param>
+		private void OnSelectProject(string idStr) {
+
+			var dao = new ProjectDao();
+			Project project = dao.GetProjectById(long.Parse(idStr));
+
+			ProjectId = project.Id;
+			this.resources[ProjectTextKey] = project.Title;
+
+			this.cvDialogBack.IsVisible = false;
+			this.gdDialogProject.IsVisible = false;
 		}
 
 		/// <summary>
 		/// スケジュールまたはタスク追加時の項目を設定する。
 		/// </summary>
-		private void SetAddScheduleOrTask(TableDiv tableDiv, DateTime selectedDate) {
+		private void SetAddScheduleOrTask(TableDiv tableDiv, DateTime selectedDate, List<Project> projectList) {
 
 			if (tableDiv == TableDiv.予定) {
 
@@ -127,17 +165,20 @@ namespace TaskCards.ViewModels {
 				EndDate = selectedDate.AddDays(7);
 			}
 
-			// TODO 仮のプロジェクトを初期選択に
-			long id1 = 1;
-			ProjectDao projectDao = new ProjectDao();
-			Project project = projectDao.GetProjectById(id1);
-			ProjectId = project.Id;
-			ProjectText = project.Title;
+			// プロジェクトの初期値を設定
+			if (projectList.Count == 0) {
+				ProjectId = NotSelectedProjectId;
+				this.resources[ProjectTextKey] = string.Format(StringConst.MessageEntryNeeded, StringConst.WordProject);
+			}
+			else {
+				ProjectId = projectList[0].Id;
+				this.resources[ProjectTextKey] = projectList[0].Title;
+			}
 
 			// TODO 仮のメンバーを初期選択に
-			long id2 = 1;
+			long memberId = 1;
 			MemberDao memberDao = new MemberDao();
-			Member member = memberDao.GetMemberById(id2);
+			Member member = memberDao.GetMemberById(memberId);
 			MemberIdList.Add(member.Id);
 			Member1Text = member.Name;
 		}
@@ -148,7 +189,7 @@ namespace TaskCards.ViewModels {
 		/// <param name="id">ID</param>
 		/// <param name="swAllDay">終日Switch</param>
 		/// <param name="resources">リソース</param>
-		private void SetEditSchedule(long id, Switch swAllDay, ResourceDictionary resources) {
+		private void SetEditSchedule(long id, Switch swAllDay) {
 
 			ScheduleDao scheduleDao = new ScheduleDao();
 			Schedule schedule = scheduleDao.GetScheduleById(id);
@@ -164,9 +205,9 @@ namespace TaskCards.ViewModels {
 			EndTime = new TimeSpan(schedule.EndDate.Hour, schedule.EndDate.Minute, schedule.EndDate.Second);
 			if(schedule.isAllDay) swAllDay.IsToggled = true;
 			ProjectId = project.Id;
-			ProjectText = project.Title;
+			this.resources[ProjectTextKey] = project.Title;
 			RepeatDiv = schedule.RepeatDiv;
-			resources["RepeatText"] = GetRepeatText(schedule.RepeatDiv);
+			this.resources[RepeatTextKey] = GetRepeatText(schedule.RepeatDiv);
 			PlaceText = schedule.Place;
 			NotesText = schedule.Notes;
 
@@ -195,7 +236,7 @@ namespace TaskCards.ViewModels {
 			StartDate = task.StartDate;
 			EndDate = task.EndDate;
 			ProjectId = project.Id;
-			ProjectText = project.Title;
+			this.resources[ProjectTextKey] = project.Title;
 			ExpectedDailyWorkTimeText = task.ExpectedDailyWorkTime.TotalHours.ToString();
 			NotesText = task.Notes;
 
@@ -203,6 +244,77 @@ namespace TaskCards.ViewModels {
 			foreach (TaskMember taskMember in taskMemberList) {
 				MemberIdList.Add(taskMember.MemberId);
 			}
+		}
+
+		/// <summary>
+		/// ダイアログ内のプロジェクトを設定する。
+		/// </summary>
+		private List<Project> SetProjectsInDialog(Grid gdProjects) {
+
+			// TODO 仮のメンバーを初期選択に
+			long memberId = 1;
+
+			var dao = new ProjectDao();
+			List<Project> entityList = dao.GetProjectListByMemberId(memberId);
+
+			int index = 0;
+			foreach (Project entity in entityList) {
+				gdProjects.Children.Add(GetProjectGrid(entity), 0, index);
+				index++;
+			}
+
+			int maxItemCount = 5;
+			if (entityList.Count < maxItemCount) {
+				for (int i = 0; i < maxItemCount - entityList.Count; i++) {
+					gdProjects.Children.Add(new Grid(), 0, index);
+					index++;
+				}
+			}
+
+			return entityList;
+		}
+
+		/// <summary>
+		/// プロジェクトのグリッドを取得する。
+		/// </summary>
+		/// <param name="project">プロジェクトデータ</param>
+		/// <returns>グリッド</returns>
+		private Grid GetProjectGrid(Project project) {
+
+			// グリッドを生成
+			var grid = new Grid {
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				ColumnSpacing = 0,
+				RowSpacing = 0,
+			};
+
+			// プロジェクトカラーのボックスビューを生成
+			var colorBoxView = new BoxView {
+				BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv),
+			};
+
+			string text = project.Title;
+			if (project.Title.Length > 13) text = text.Substring(0, 12) + "…";
+
+			// タイトルのラベルを生成
+			var titleLabel = new Label {
+				Text = text,
+				VerticalTextAlignment = TextAlignment.Center,
+				TextColor = Color.FromHex("#2F4F4F"),
+			};
+
+			// IDを引数にしたタップイベントを付与
+			grid.GestureRecognizers.Add(LayoutUtility.GetTapGestureRecognizerWithParameter(
+				"SelectedProjectCommand", project.Id.ToString()));
+
+			// グリッドに項目を追加
+			grid.Children.Add(colorBoxView, 1, 2, 0, 1);
+			grid.Children.Add(new BoxView(), 2, 3, 0, 1);
+			grid.Children.Add(titleLabel, 3, 26, 0, 1);
+			grid.Children.Add(new BoxView(), 26, 27, 0, 1);
+
+			return grid;
 		}
 
 		/// <summary>

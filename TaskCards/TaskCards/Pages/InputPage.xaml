@@ -9,6 +9,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <x:String x:Key="RepeatText" />
+            <x:String x:Key="ProjectText" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -101,16 +102,16 @@
                             Text="{StaticResource dailyTime}"/>
                     </Grid>
 
-                    <!--
                     <Grid x:Name="gdProject" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
                         <Label
                             Style="{StaticResource InputConfirmLeftLabel}"
-                            Text="{Binding ProjectText}"/>
+                            Text="{DynamicResource ProjectText}"/>
                         <Image
                             Style="{StaticResource InputConfirmRightImage}"
                             Source="{Binding InputConfirmArrowIconSource}"/>
                     </Grid>
 
+                    <!--
                     <ScrollView x:Name="svMember" Grid.Row="5" Grid.RowSpan="3">
                         <Grid x:Name="ltMember" Style="{StaticResource NoSpacingFullGrid}" HeightRequest="{Binding MemberHeight}">
 
@@ -148,7 +149,7 @@
                     </Grid>
                     -->
 
-                    <Grid Grid.Row="4" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid Grid.Row="5" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
                         <Label
                             Grid.Row="0"
                             Grid.RowSpan="2"
@@ -175,15 +176,15 @@
 
                     <Entry
                         x:Name="etPlace"
-                        Grid.Row="7"
+                        Grid.Row="8"
                         Style="{StaticResource InputConfirmEntry}"
                         Text="{Binding PlaceText}"
                         Placeholder="{StaticResource place}"
                         IsVisible="False"/>
 
                     <BoxView
-                        Grid.Row="8"
-                        Grid.RowSpan="6"/>
+                        Grid.Row="9"
+                        Grid.RowSpan="5"/>
 
                 </Grid>
 
@@ -201,25 +202,43 @@
 
                 <Grid x:Name="gdDialogFront" Style="{StaticResource DialogFrontGrid}">
 
-                    <ListView x:Name="lstRepeat" ItemsSource="{Binding RepeatItems}">
-                        <ListView.Behaviors>
-                            <b:SelectedItemBehavior Command="{Binding SelectedRepeatCommand}"/>
-                        </ListView.Behaviors>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <Grid Style="{StaticResource SelectDialogItemGrid}">
-                                        <BoxView Grid.Column="0" />
-                                        <Label
-                                            Grid.Column="1"
-                                            Grid.ColumnSpan="28"
-                                            Style="{StaticResource SelectDialogItemLabel}" />
-                                        <BoxView Grid.Column="29" />
-                                    </Grid>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <Grid x:Name="gdDialogRepeat" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <ListView x:Name="lstRepeat" ItemsSource="{Binding RepeatItems}">
+                            <ListView.Behaviors>
+                                <b:SelectedItemBehavior Command="{Binding SelectedRepeatCommand}"/>
+                            </ListView.Behaviors>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid Style="{StaticResource SelectDialogItemGrid}">
+                                            <BoxView Grid.Column="0" />
+                                            <Label
+                                                Grid.Column="1"
+                                                Grid.ColumnSpan="28"
+                                                Style="{StaticResource SelectDialogItemLabel}" />
+                                            <BoxView Grid.Column="29" />
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+
+                    <Grid x:Name="gdDialogProject" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False" BackgroundColor="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="18*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="1" Style="{StaticResource NoSpacingFullGrid}">
+                            <ScrollView Grid.Row="0">
+                                <Grid x:Name="gdProjects" Style="{StaticResource NoSpacingFullGrid}">
+                                    <!-- プログラムで動的にプロジェクトを追加 -->
+                                </Grid>
+                            </ScrollView>
+                        </Grid>
+                    </Grid>
 
                 </Grid>
 

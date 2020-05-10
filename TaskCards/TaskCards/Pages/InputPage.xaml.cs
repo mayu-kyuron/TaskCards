@@ -64,9 +64,9 @@ namespace TaskCards.Pages {
 			tgrTopRightButton.Tapped += (sender, e) => OnClickTopRightButton(sender, e);
 			imgTopRightButton.GestureRecognizers.Add(tgrTopRightButton);
 
-			//var tgrProject = new TapGestureRecognizer();
-			//tgrProject.Tapped += (sender, e) => OnClickProject(sender, e);
-			//gdProject.GestureRecognizers.Add(tgrProject);
+			var tgrProject = new TapGestureRecognizer();
+			tgrProject.Tapped += (sender, e) => OnClickProject(sender, e);
+			gdProject.GestureRecognizers.Add(tgrProject);
 
 			//var tgrRepeatGrid = new TapGestureRecognizer();
 			//tgrRepeatGrid.Tapped += (sender, e) => OnClickRepeatGrid(sender, e);
@@ -99,7 +99,7 @@ namespace TaskCards.Pages {
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
 			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, 
-				Height, cvDialogBack, swAllDay, Resources);
+				Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, swAllDay, Resources);
 			BindingContext = this.viewModel;
 
 			// 繰り返し選択ダイアログのリスト行の高さを設定
@@ -117,6 +117,8 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDialogBack(object sender, EventArgs e) {
 			cvDialogBack.IsVisible = false;
+			gdDialogRepeat.IsVisible = false;
+			gdDialogProject.IsVisible = false;
 		}
 
 		/// <summary>
@@ -196,7 +198,8 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnClickProject(object sender, EventArgs e) {
-
+			cvDialogBack.IsVisible = true;
+			gdDialogProject.IsVisible = true;
 		}
 
 		/// <summary>
@@ -206,6 +209,7 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickRepeatGrid(object sender, EventArgs e) {
 			cvDialogBack.IsVisible = true;
+			gdDialogRepeat.IsVisible = true;
 		}
 
 		/// <summary>
@@ -215,7 +219,7 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickRepeatCancel(object sender, EventArgs e) {
 			this.viewModel.RepeatDiv = RepeatDiv.繰り返しなし;
-			Resources["RepeatText"] = StringConst.RepeatNone;
+			Resources[InputViewModel.RepeatTextKey] = StringConst.RepeatNone;
 		}
 
 		/// <summary>
@@ -356,6 +360,17 @@ namespace TaskCards.Pages {
 
 					return false;
 				}
+			}
+
+			// プロジェクト入力チェック
+			if (this.viewModel.ProjectId == InputViewModel.NotSelectedProjectId) {
+
+				Device.BeginInvokeOnMainThread((async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						String.Format(StringConst.MessageEntryNeeded, StringConst.WordProject), StringConst.DialogAnswerPositive);
+				}));
+
+				return false;
 			}
 
 			return true;
