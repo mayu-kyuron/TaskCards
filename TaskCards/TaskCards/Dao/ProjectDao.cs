@@ -63,7 +63,8 @@ namespace TaskCards.Dao {
 		/// プロジェクトを登録する。
 		/// </summary>
 		/// <param name="entity">Entity</param>
-		public void Insert(Project entity) {
+		/// <returns>キー</returns>
+		public long Insert(Project entity) {
 			var preferences = new Preferences();
 
 			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
@@ -75,6 +76,29 @@ namespace TaskCards.Dao {
 					con.Insert(entity);
 				});
 			}
+
+			return entity.Id;
+		}
+
+		/// <summary>
+		/// プロジェクトを更新する。
+		/// </summary>
+		/// <param name="entity">Entity</param>
+		/// <returns>キー</returns>
+		public long Update(Project entity) {
+			var preferences = new Preferences();
+
+			using (SQLiteConnection con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Project>();
+
+					con.Update(entity);
+				});
+			}
+
+			return entity.Id;
 		}
 
 		/// <summary>

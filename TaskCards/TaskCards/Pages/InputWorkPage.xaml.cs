@@ -254,6 +254,8 @@ namespace TaskCards.Pages {
 
 			taskDao.Update(task);
 
+			// TODO taskProgressListの要素がひとつもない場合、プロジェクトの開始日を当日に設定する。
+
 			// タスク進捗を追加
 			var taskProgress = new TaskProgress {
 				TaskMemberId = taskMemberId,

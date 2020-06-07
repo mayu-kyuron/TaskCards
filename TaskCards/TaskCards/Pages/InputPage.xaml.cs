@@ -100,6 +100,8 @@ namespace TaskCards.Pages {
 				Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, gdDialogColor, swAllDay, Resources);
 			BindingContext = this.viewModel;
 
+			if (this.id == 0 && this.executeDiv == ExecuteDiv.更新) this.executeDiv = ExecuteDiv.追加;
+
 			// 項目選択ダイアログのリスト行の高さを設定
 			int rowHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight);
 			lstRepeat.RowHeight = rowHeight;
@@ -157,6 +159,7 @@ namespace TaskCards.Pages {
 
 			switch (this.tableDiv) {
 				case TableDiv.プロジェクト:
+					InsertOrUpdateProjectAndProjectMembers();
 					break;
 				case TableDiv.予定:
 					InsertOrUpdateScheduleAndScheduleMembers();
@@ -555,6 +558,51 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
+		/// プロジェクトと所属メンバーを登録または更新する。
+		/// </summary>
+		private void InsertOrUpdateProjectAndProjectMembers() {
+
+			long id = (this.executeDiv == ExecuteDiv.追加) ? 0 : this.id;
+
+			var project = new Project {
+				Id = id,
+				Title = this.viewModel.TitleText,
+				ExpectedStartDate = this.viewModel.StartDate,
+				ExpectedEndDate = this.viewModel.EndDate,
+				ColorDiv = this.viewModel.ColorDiv,
+				Notes = this.viewModel.NotesText,
+				ExpectedSales = long.Parse(this.viewModel.ExpectedSalesText),
+				Sales = long.Parse(this.viewModel.SalesText),
+			};
+
+			var projectDao = new ProjectDao();
+			var projectMemberDao = new ProjectMemberDao();
+
+			// プロジェクトの登録または更新
+			if (this.executeDiv == ExecuteDiv.追加) {
+				id = projectDao.Insert(project);
+			}
+			else if (this.executeDiv == ExecuteDiv.更新) {
+				id = projectDao.Update(project);
+
+				// 前回のプロジェクトメンバーの削除
+				projectMemberDao.DeleteAllByProjectId(id);
+			}
+
+			// プロジェクトメンバーの登録
+			foreach (long memberId in this.viewModel.MemberIdList) {
+
+				var projectMember = new ProjectMember {
+					ProjectId = id,
+					MemberId = memberId,
+					CanEdit = true // 仮に全員が編集可能に
+				};
+
+				projectMemberDao.Insert(projectMember);
+			}
+		}
+
+		/// <summary>
 		/// スケジュールと所属メンバーを登録または更新する。
 		/// </summary>
 		private void InsertOrUpdateScheduleAndScheduleMembers() {
@@ -682,6 +730,8 @@ namespace TaskCards.Pages {
 					}
 				}
 			}
+
+			// TODO プロジェクトの予定時間を再計算・更新
 		}
 
 		/// <summary>
