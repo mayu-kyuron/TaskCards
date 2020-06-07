@@ -6,8 +6,23 @@
     public enum ColorDiv {
 
 		/// <summary>
-		/// 赤
+		/// スカイブルー
 		/// </summary>
-		赤 = 1,
+		スカイブルー = 1,
+
+		/// <summary>
+		/// シーグリーン
+		/// </summary>
+		シーグリーン = 2,
+
+		/// <summary>
+		/// コーラルレッド
+		/// </summary>
+		コーラルレッド = 3,
+
+		/// <summary>
+		/// プラムバイオレット
+		/// </summary>
+		プラムバイオレット = 4,
 	}
 }

@@ -35,12 +35,17 @@ namespace TaskCards.Utilities {
 		/// <returns>カラー</returns>
 		public static Color GetColorByColorDiv(ColorDiv colorDiv) {
 
-			// TODO 色区分が増えるごとに分岐を追加する。
 			switch (colorDiv) {
-				case ColorDiv.赤:
-					return Color.Red;
+				case ColorDiv.スカイブルー:
+					return Color.SkyBlue;
+				case ColorDiv.シーグリーン:
+					return Color.MediumSeaGreen;
+				case ColorDiv.コーラルレッド:
+					return Color.Coral;
+				case ColorDiv.プラムバイオレット:
+					return Color.Plum;
 				default:
-					return Color.White;
+					return Color.SkyBlue;
 			}
 		}
 

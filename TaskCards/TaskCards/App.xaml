@@ -3,8 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TaskCards.App">
     <Application.Resources>
-
 		<ResourceDictionary>
+
+            <!-- 文字列 -->
+
+            <x:String x:Key="calendar">カレンダー</x:String>
+			<x:String x:Key="task">タスク</x:String>
+            <x:String x:Key="schedule">スケジュール</x:String>
+            <x:String x:Key="title">タイトル</x:String>
+            <x:String x:Key="allDay">終日</x:String>
+            <x:String x:Key="edit">編集</x:String>
+            <x:String x:Key="delete">削除</x:String>
+            <x:String x:Key="place">場所</x:String>
+            <x:String x:Key="notes">メモ</x:String>
+            <x:String x:Key="dailyTime"> 時間 / 日</x:String>
+            <x:String x:Key="workTime">作業時間</x:String>
+            <x:String x:Key="member">参加者</x:String>
+            <x:String x:Key="sales">売上</x:String>
+            <x:String x:Key="expectedSales">（予）</x:String>
+            <x:String x:Key="actualSales">（実）</x:String>
+            <x:String x:Key="yen">円</x:String>
+            <x:String x:Key="dailyRate"> ％ / 100％</x:String>
+            <x:String x:Key="progressRate">進捗率</x:String>
 
             <!-- プラットフォームごとのスタイル -->
 
@@ -253,6 +273,26 @@
                 <Setter Property="Date" Value="{Binding EndDate}" />
             </Style>
 
+            <Style x:Key="InputConfirmSalesArrowImage" TargetType="{x:Type Image}">
+                <Setter Property="Source" Value="{Binding InputConfirmSalesArrowSource}" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+
+            <Style x:Key="InputSalesPrefixLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.ColumnSpan" Value="1" />
+            </Style>
+
+            <Style x:Key="InputSalesEntry" TargetType="{x:Type Entry}" BasedOn="{StaticResource InputConfirmEntry}">
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="Keyboard" Value="Numeric" />
+            </Style>
+
+            <Style x:Key="InputSalesSuffixLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.ColumnSpan" Value="1" />
+                <Setter Property="Text" Value="{StaticResource yen}" />
+            </Style>
+
             <Style x:Key="ConfirmTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
                 <Setter Property="Grid.ColumnSpan" Value="3" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -328,25 +368,6 @@
                 <Setter Property="Grid.ColumnSpan" Value="9" />
             </Style>
 
-            <!-- 文字列 -->
-
-            <x:String x:Key="calendar">カレンダー</x:String>
-			<x:String x:Key="task">タスク</x:String>
-            <x:String x:Key="schedule">スケジュール</x:String>
-            <x:String x:Key="title">タイトル</x:String>
-            <x:String x:Key="allDay">終日</x:String>
-            <x:String x:Key="edit">編集</x:String>
-            <x:String x:Key="delete">削除</x:String>
-            <x:String x:Key="place">場所</x:String>
-            <x:String x:Key="notes">メモ</x:String>
-            <x:String x:Key="dailyTime"> 時間 / 日</x:String>
-            <x:String x:Key="workTime">作業時間</x:String>
-            <x:String x:Key="member">参加者</x:String>
-            <x:String x:Key="sales">売上</x:String>
-            <x:String x:Key="dailyRate"> ％ / 100％</x:String>
-            <x:String x:Key="progressRate">進捗率</x:String>
-
         </ResourceDictionary>
-		
     </Application.Resources>
 </Application>

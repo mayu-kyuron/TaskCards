@@ -57,11 +57,11 @@ namespace TaskCards.Entities {
 		/// <summary>
 		/// 予定売上
 		/// </summary>
-		public int ExpectedSales { set; get; }
+		public long ExpectedSales { set; get; }
 
 		/// <summary>
 		/// 実売上
 		/// </summary>
-		public int Sales { set; get; }
+		public long Sales { set; get; }
 	}
 }

@@ -12,6 +12,7 @@
 		public const string WordSchedule = "スケジュール";
 		public const string WordTask = "タスク";
 		public const string WordProject = "プロジェクト";
+		public const string WordMember = "メンバー";
 
 		// ダイアログタイトル
 		public const string DialogTitleConfirm = "確認";

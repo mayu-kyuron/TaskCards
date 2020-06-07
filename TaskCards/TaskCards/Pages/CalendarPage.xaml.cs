@@ -72,7 +72,7 @@ namespace TaskCards.Pages {
 				Project myProject = new Project();
 				myProject.Id = projectId;
 				myProject.Title = "プロジェクトA";
-				myProject.ColorDiv = ColorDiv.赤;
+				myProject.ColorDiv = ColorDiv.スカイブルー;
 				projectDao.Insert(myProject);
 			}
 

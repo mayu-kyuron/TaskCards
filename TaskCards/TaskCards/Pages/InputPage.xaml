@@ -10,6 +10,7 @@
         <ResourceDictionary>
             <x:String x:Key="RepeatText" />
             <x:String x:Key="ProjectText" />
+            <x:String x:Key="ColorText" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -101,11 +102,52 @@
                             Style="{StaticResource InputConfirmLabel}"
                             Text="{StaticResource dailyTime}"/>
                     </Grid>
+                    <Grid x:Name="gdSales" Grid.Row="3" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <Label
+                            Grid.Row="0"
+                            Style="{StaticResource InputConfirmSmallTitleLabel}"
+                            Text="{StaticResource sales}"/>
+                        <Grid Grid.Row="1" Grid.RowSpan="2">
+                            <Label
+                                Grid.Column="0"
+                                Style="{StaticResource InputSalesPrefixLabel}"
+                                Text="{StaticResource expectedSales}"/>
+                            <Entry
+                                Grid.Column="1"
+                                Style="{StaticResource InputSalesEntry}"
+                                Text="{Binding ExpectedSalesText}"/>
+                            <Label
+                                Grid.Column="3"
+                                Style="{StaticResource InputSalesSuffixLabel}"/>
+                            <Image
+                                Grid.Column="4"
+                                Style="{StaticResource InputConfirmSalesArrowImage}"/>
+                            <Label
+                                Grid.Column="5"
+                                Style="{StaticResource InputSalesPrefixLabel}"
+                                Text="{StaticResource actualSales}"/>
+                            <Entry
+                                Grid.Column="6"
+                                Style="{StaticResource InputSalesEntry}"
+                                Text="{Binding SalesText}"/>
+                            <Label
+                                Grid.Column="8"
+                                Style="{StaticResource InputSalesSuffixLabel}"/>
+                        </Grid>
+                    </Grid>
 
-                    <Grid x:Name="gdProject" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid x:Name="gdProject" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
                         <Label
                             Style="{StaticResource InputConfirmLeftLabel}"
                             Text="{DynamicResource ProjectText}"/>
+                        <Image
+                            Style="{StaticResource InputConfirmRightImage}"
+                            Source="{Binding InputConfirmArrowIconSource}"/>
+                    </Grid>
+                    <Grid x:Name="gdColor" Grid.Row="4" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <Label
+                            Style="{StaticResource InputConfirmLeftLabel}"
+                            Text="{DynamicResource ColorText}"/>
                         <Image
                             Style="{StaticResource InputConfirmRightImage}"
                             Source="{Binding InputConfirmArrowIconSource}"/>
@@ -232,12 +274,56 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="1" Style="{StaticResource NoSpacingFullGrid}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="4*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
                             <ScrollView Grid.Row="0">
                                 <Grid x:Name="gdProjects" Style="{StaticResource NoSpacingFullGrid}">
                                     <!-- プログラムで動的にプロジェクトを追加 -->
                                 </Grid>
                             </ScrollView>
+
+                            <Grid x:Name="gdAddProject" Grid.Row="1" Style="{StaticResource NoSpacingFullGrid}">
+                                <BoxView
+                                     Grid.Column="0"/>
+                                <Grid Grid.Column="1" Grid.ColumnSpan="30" Style="{StaticResource NoSpacingFullGrid}">
+                                    <Image
+                                        Style="{StaticResource InputConfirmAddImage}"/>
+                                    <BoxView
+                                        Style="{StaticResource InputConfirmAddBoxView}"/>
+                                    <Label 
+                                        Style="{StaticResource InputConfirmAddLabel}"
+                                        Text="{Binding AddProjectText}"
+                                        FontSize="Small"/>
+                                </Grid>
+                                <BoxView
+                                     Grid.Column="31"/>
+                            </Grid>
                         </Grid>
+                    </Grid>
+
+                    <Grid x:Name="gdDialogColor" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
+                        <ListView x:Name="lstColor" ItemsSource="{Binding ColorItems}">
+                            <ListView.Behaviors>
+                                <b:SelectedItemBehavior Command="{Binding SelectedColorCommand}"/>
+                            </ListView.Behaviors>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid Style="{StaticResource SelectDialogItemGrid}">
+                                            <BoxView Grid.Column="0" />
+                                            <Label
+                                                Grid.Column="1"
+                                                Grid.ColumnSpan="28"
+                                                Style="{StaticResource SelectDialogItemLabel}" />
+                                            <BoxView Grid.Column="29" />
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Grid>
 
                 </Grid>

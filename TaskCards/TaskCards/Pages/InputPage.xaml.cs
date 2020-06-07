@@ -68,6 +68,14 @@ namespace TaskCards.Pages {
 			tgrProject.Tapped += (sender, e) => OnClickProject(sender, e);
 			gdProject.GestureRecognizers.Add(tgrProject);
 
+			var tgrAddProject = new TapGestureRecognizer();
+			tgrAddProject.Tapped += (sender, e) => OnClickAddProject(sender, e);
+			gdAddProject.GestureRecognizers.Add(tgrAddProject);
+
+			var tgrColor = new TapGestureRecognizer();
+			tgrColor.Tapped += (sender, e) => OnClickColor(sender, e);
+			gdColor.GestureRecognizers.Add(tgrColor);
+
 			//var tgrRepeatGrid = new TapGestureRecognizer();
 			//tgrRepeatGrid.Tapped += (sender, e) => OnClickRepeatGrid(sender, e);
 			//gdRepeat.GestureRecognizers.Add(tgrRepeatGrid);
@@ -75,21 +83,6 @@ namespace TaskCards.Pages {
 			//var tgrRepeatCancel = new TapGestureRecognizer();
 			//tgrRepeatCancel.Tapped += (sender, e) => OnClickRepeatCancel(sender, e);
 			//imgRepeat.GestureRecognizers.Add(tgrRepeatCancel);
-
-			// 各コントロールの表示切り替え
-			switch (this.tableDiv) {
-
-				case TableDiv.予定:
-					gdTime.IsVisible = true;
-					gdAllDay.IsVisible = true;
-					etPlace.IsVisible = true;
-					break;
-
-				case TableDiv.タスク:
-					gdDate.IsVisible = true;
-					gdExpectedDailyWorkTime.IsVisible = true;
-					break;
-			}
 		}
 
 		/// <summary>
@@ -98,13 +91,20 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
-			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, 
-				Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, swAllDay, Resources);
+
+			BaseEvent tempEvent = ResetValuesAfterTempSave();
+
+			SetControlsVisibility();
+
+			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, tempEvent,
+				Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, gdDialogColor, swAllDay, Resources);
 			BindingContext = this.viewModel;
 
-			// 繰り返し選択ダイアログのリスト行の高さを設定
-			lstRepeat.RowHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight);
-			double dialogHeight = lstRepeat.RowHeight * 4 + 2;
+			// 項目選択ダイアログのリスト行の高さを設定
+			int rowHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight);
+			lstRepeat.RowHeight = rowHeight;
+			lstColor.RowHeight = rowHeight;
+			double dialogHeight = rowHeight * 4 + 2;
 			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = (Height - dialogHeight) / 2 });
 			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogHeight });
 			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = (Height - dialogHeight) / 2 });
@@ -119,6 +119,7 @@ namespace TaskCards.Pages {
 			cvDialogBack.IsVisible = false;
 			gdDialogRepeat.IsVisible = false;
 			gdDialogProject.IsVisible = false;
+			gdDialogColor.IsVisible = false;
 		}
 
 		/// <summary>
@@ -203,6 +204,38 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
+		/// プロジェクト追加クリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickAddProject(object sender, EventArgs e) {
+
+			long id = 0;
+			switch (this.tableDiv) {
+				case TableDiv.予定:
+					id = InsertTempScheduleAndTempScheduleMembers();
+					break;
+				case TableDiv.タスク:
+					id = InsertTempTaskAndTempTaskMembers();
+					break;
+			}
+
+			// プロジェクト追加用の入力ページに遷移
+			Application.Current.MainPage = new InputPage(this.selectedDate,
+				TableDiv.プロジェクト, PageDiv.入力, ExecuteDiv.追加, id);
+		}
+
+		/// <summary>
+		/// テーマカラークリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickColor(object sender, EventArgs e) {
+			cvDialogBack.IsVisible = true;
+			gdDialogColor.IsVisible = true;
+		}
+
+		/// <summary>
 		/// 繰り返しグリッドクリックイベント
 		/// </summary>
 		/// <param name="sender"></param>
@@ -262,6 +295,70 @@ namespace TaskCards.Pages {
 							break;
 					}
 					break;
+
+				case PageDiv.入力:
+					Application.Current.MainPage = new InputPage(this.selectedDate,
+						TableDiv.不明, PageDiv.カレンダー, ExecuteDiv.不明, this.id);
+					break;
+			}
+		}
+
+		/// <summary>
+		/// データを一時保存して戻ってきた場合に、各値を再設定する。
+		/// </summary>
+		/// <returns>一時保存データ（なければ null）</returns>
+		private BaseEvent ResetValuesAfterTempSave() {
+
+			if (this.executeDiv != ExecuteDiv.不明) return null;
+
+			this.tableDiv = TableDiv.予定;
+			this.executeDiv = ExecuteDiv.更新;
+
+			var tempScheduleDao = new TempScheduleDao();
+			TempSchedule tempSchedule = tempScheduleDao.GetTempScheduleById(id);
+
+			if (tempSchedule != null) {
+				this.id = tempSchedule.ScheduleId;
+				return tempSchedule;
+			}
+
+			var tempTaskDao = new TempTaskDao();
+			TempTask tempTask = tempTaskDao.GetTempTaskById(id);
+
+			if (tempTask != null) {
+				this.tableDiv = TableDiv.タスク;
+				this.id = tempTask.TaskId;
+				return tempTask;
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// 各コントロールの表示非表示を切り替える。
+		/// </summary>
+		private void SetControlsVisibility() {
+
+			switch (this.tableDiv) {
+
+				case TableDiv.予定:
+					gdTime.IsVisible = true;
+					gdAllDay.IsVisible = true;
+					gdProject.IsVisible = true;
+					etPlace.IsVisible = true;
+					break;
+
+				case TableDiv.タスク:
+					gdDate.IsVisible = true;
+					gdExpectedDailyWorkTime.IsVisible = true;
+					gdProject.IsVisible = true;
+					break;
+
+				case TableDiv.プロジェクト:
+					gdDate.IsVisible = true;
+					gdSales.IsVisible = true;
+					gdColor.IsVisible = true;
+					break;
 			}
 		}
 
@@ -295,7 +392,7 @@ namespace TaskCards.Pages {
 					return false;
 				}
 			}
-			else if (this.tableDiv == TableDiv.タスク) {
+			else if (this.tableDiv == TableDiv.タスク || this.tableDiv == TableDiv.プロジェクト) {
 				if (this.viewModel.StartDate.CompareTo(this.viewModel.EndDate) == 1) {
 
 					Device.BeginInvokeOnMainThread((async () => {
@@ -361,14 +458,95 @@ namespace TaskCards.Pages {
 					return false;
 				}
 			}
+			else if (this.tableDiv == TableDiv.プロジェクト) {
 
-			// プロジェクト入力チェック
-			if (this.viewModel.ProjectId == InputViewModel.NotSelectedProjectId) {
+				// 予定売上の整数チェック
+				if (!ValidateSales(1)) return false;
 
-				Device.BeginInvokeOnMainThread((async () => {
+				// 実売上の整数チェック
+				if (!ValidateSales(2)) return false;
+			}
+
+			if (this.tableDiv == TableDiv.予定 || this.tableDiv == TableDiv.タスク) {
+
+				// プロジェクト入力チェック
+				if (this.viewModel.ProjectId == InputViewModel.NotSelectedProjectId) {
+
+					Device.BeginInvokeOnMainThread((async () => {
+						await DisplayAlert(StringConst.DialogTitleError,
+							String.Format(StringConst.MessageEntryNeeded, StringConst.WordProject), StringConst.DialogAnswerPositive);
+					}));
+
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// 売上を入力検証する。
+		/// </summary>
+		/// <param name="div">売上区分</param>
+		/// <returns>検証OKなら「true」、NGなら「false」</returns>
+		private bool ValidateSales(int div) {
+
+			string sales = "";
+			string salesName = "";
+
+			switch (div) {
+				case 1:
+					sales = this.viewModel.ExpectedSalesText;
+					salesName = "予定売上";
+					if (string.IsNullOrEmpty(sales)) {
+						this.viewModel.ExpectedSalesText = "0";
+						return true;
+					}
+					break;
+				case 2:
+					sales = this.viewModel.SalesText;
+					salesName = "実売上";
+					if (string.IsNullOrEmpty(sales)) {
+						this.viewModel.SalesText = "0";
+						return true;
+					}
+					break;
+			}
+
+			long salesNum;
+
+			// 売上の整数変換チェック
+			if (!long.TryParse(sales, out salesNum)) {
+
+				Device.BeginInvokeOnMainThread(async () => {
 					await DisplayAlert(StringConst.DialogTitleError,
-						String.Format(StringConst.MessageEntryNeeded, StringConst.WordProject), StringConst.DialogAnswerPositive);
-				}));
+						string.Format(StringConst.MessageWrongType, salesName, "整数"),
+						StringConst.DialogAnswerPositive);
+				});
+
+				return false;
+			}
+
+			// 売上の整数の最大値チェック
+			if (salesNum > 999999999999) {
+
+				Device.BeginInvokeOnMainThread(async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						string.Format(StringConst.MessageWrongType, salesName, "999,999,999,999以下の整数"),
+						StringConst.DialogAnswerPositive);
+				});
+
+				return false;
+			}
+
+			// 売上の正の数チェック
+			if (salesNum < 0) {
+
+				Device.BeginInvokeOnMainThread(async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						string.Format(StringConst.MessageWrongType, salesName, "0以上の整数"),
+						StringConst.DialogAnswerPositive);
+				});
 
 				return false;
 			}
@@ -504,6 +682,94 @@ namespace TaskCards.Pages {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// 一時保存スケジュールと所属メンバーを登録する。
+		/// </summary>
+		/// <returns>一時保存スケジュールID</returns>
+		private long InsertTempScheduleAndTempScheduleMembers() {
+
+			DateTime startDate = this.selectedDate.Date;
+			DateTime endDate = this.selectedDate.Date;
+			if (!swAllDay.IsToggled) {
+				startDate += this.viewModel.StartTime;
+				endDate += this.viewModel.EndTime;
+			}
+
+			var tempSchedule = new TempSchedule {
+				ScheduleId = this.id,
+				Title = this.viewModel.TitleText,
+				StartDate = startDate,
+				EndDate = endDate,
+				isAllDay = swAllDay.IsToggled,
+				ProjectId = this.viewModel.ProjectId,
+				RepeatDiv = this.viewModel.RepeatDiv,
+				Place = this.viewModel.PlaceText,
+				Notes = this.viewModel.NotesText
+			};
+
+			var tempScheduleDao = new TempScheduleDao();
+			var tempScheduleMemberDao = new TempScheduleMemberDao();
+
+			// 一時保存スケジュールの登録
+			long id = tempScheduleDao.Insert(tempSchedule);
+
+			// 一時保存スケジュールメンバーの登録
+			foreach (long memberId in this.viewModel.MemberIdList) {
+
+				var tempScheduleMember = new TempScheduleMember {
+					ScheduleId = id,
+					MemberId = memberId,
+					CanEdit = true // 仮に全員が編集可能に
+				};
+
+				tempScheduleMemberDao.Insert(tempScheduleMember);
+			}
+
+			return id;
+		}
+
+		/// <summary>
+		/// 一時保存タスクと所属メンバーを登録する。
+		/// </summary>
+		/// <returns>一時保存タスクID</returns>
+		private long InsertTempTaskAndTempTaskMembers() {
+
+			int expectedDailyWorkSeconds = 0;
+			if (!string.IsNullOrEmpty(this.viewModel.ExpectedDailyWorkTimeText)) {
+				expectedDailyWorkSeconds = (int)Math.Truncate(double.Parse(this.viewModel.ExpectedDailyWorkTimeText) * 3600);
+			}
+
+			var tempTask = new TempTask {
+				TaskId = this.id,
+				Title = this.viewModel.TitleText,
+				StartDate = this.viewModel.StartDate,
+				EndDate = this.viewModel.EndDate,
+				ExpectedDailyWorkTime = new TimeSpan(0, 0, expectedDailyWorkSeconds),
+				ProjectId = this.viewModel.ProjectId,
+				Notes = this.viewModel.NotesText
+			};
+
+			var tempTaskDao = new TempTaskDao();
+			var tempTaskMemberDao = new TempTaskMemberDao();
+
+			// 一時保存タスクの登録
+			long id = tempTaskDao.Insert(tempTask);
+
+			// 一時保存タスクメンバーの登録
+			foreach (long memberId in this.viewModel.MemberIdList) {
+
+				var tempTaskMember = new TempTaskMember {
+					TaskId = id,
+					MemberId = memberId,
+					CanEdit = true // 仮に全員が編集可能に
+				};
+
+				tempTaskMemberDao.Insert(tempTaskMember);
+			}
+
+			return id;
 		}
 	}
 }
