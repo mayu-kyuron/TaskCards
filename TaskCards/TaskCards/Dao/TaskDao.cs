@@ -112,6 +112,36 @@ namespace TaskCards.Dao {
 		}
 
 		/// <summary>
+		/// プロジェクトIDからタスクリストを取得する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		/// <returns>タスクリスト</returns>
+		public List<Task> GetTaskListByProjectId(long projectId) {
+
+			var preferences = new Preferences();
+			var entityList = new List<Task>();
+
+			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				var query = new TableQuery<Task>(con);
+
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Task>();
+
+					query = con.Table<Task>()
+					.Where(v => v.ProjectId == projectId);
+				});
+
+				foreach (Task entity in query) {
+					entityList.Add(entity);
+				}
+			}
+
+			return entityList;
+		}
+
+		/// <summary>
 		/// タスクを登録する。
 		/// </summary>
 		/// <param name="entity">Entity</param>

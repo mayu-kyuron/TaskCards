@@ -11,6 +11,33 @@ namespace TaskCards.Dao {
 	public class TaskMemberDao {
 
 		/// <summary>
+		/// タスクメンバーIDよりタスクメンバーデータを取得する。
+		/// </summary>
+		/// <param name="id">タスクメンバーID</param>
+		/// <returns>タスクメンバーデータ</returns>
+		public TaskMember GetTaskMemberById(long id) {
+			var preferences = new Preferences();
+			var entity = new TaskMember();
+
+			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				var query = new TableQuery<TaskMember>(con);
+
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<TaskMember>();
+
+					query = con.Table<TaskMember>()
+					.Where(v => v.Id == id);
+				});
+
+				entity = query.FirstOrDefault();
+			}
+
+			return entity;
+		}
+
+		/// <summary>
 		/// タスクIDからタスクメンバーリストを取得する。
 		/// </summary>
 		/// <param name="taskId">タスクID</param>

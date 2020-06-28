@@ -4,11 +4,26 @@
              x:Class="TaskCards.Pages.TaskPage"
              Style="{StaticResource ContentPage}"
              Padding="{StaticResource ContentPagePadding}">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
-    </ContentPage.Content>
+
+    <ScrollView Style="{StaticResource DialogBaseScrollView}">
+        <Grid x:Name="layoutBase" Style="{StaticResource DialogBaseGrid}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- 中央部の幅を変更したら、GetTasksGrid()のColumnDefinitionsも変更する。 -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="gdProjects" Style="{StaticResource NoSpacingFullGrid}" Grid.Row="0" Grid.Column="1">
+                <!-- プログラムで動的にプロジェクトを追加 -->
+            </Grid>
+
+        </Grid>
+    </ScrollView>
+
 </ContentPage>

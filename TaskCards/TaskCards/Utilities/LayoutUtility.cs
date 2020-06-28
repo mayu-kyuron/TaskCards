@@ -50,6 +50,27 @@ namespace TaskCards.Utilities {
 		}
 
 		/// <summary>
+		/// 色区分から表示するカラーを薄めた色を取得する。
+		/// </summary>
+		/// <param name="colorDiv">色区分</param>
+		/// <returns>カラーを薄めた色</returns>
+		public static Color GetLightColorByColorDiv(ColorDiv colorDiv) {
+
+			switch (colorDiv) {
+				case ColorDiv.スカイブルー:
+					return Color.FromHex("#B0DFF1");
+				case ColorDiv.シーグリーン:
+					return Color.FromHex("#57C587");
+				case ColorDiv.コーラルレッド:
+					return Color.FromHex("#FFA17F");
+				case ColorDiv.プラムバイオレット:
+					return Color.FromHex("#E9C3E9");
+				default:
+					return Color.FromHex("#B0DFF1");
+			}
+		}
+
+		/// <summary>
 		/// 引数ありのTapGestureRecognizerを取得する。
 		/// </summary>
 		/// <param name="commandName">コマンド名</param>
