@@ -20,8 +20,8 @@
             <x:String x:Key="workTime">作業時間</x:String>
             <x:String x:Key="member">参加者</x:String>
             <x:String x:Key="sales">売上</x:String>
-            <x:String x:Key="expectedSales">（予）</x:String>
-            <x:String x:Key="actualSales">（実）</x:String>
+            <x:String x:Key="expectedSales">(予)</x:String>
+            <x:String x:Key="actualSales">(実)</x:String>
             <x:String x:Key="yen">円</x:String>
             <x:String x:Key="dailyRate"> ％ / 100％</x:String>
             <x:String x:Key="progressRate">進捗率</x:String>

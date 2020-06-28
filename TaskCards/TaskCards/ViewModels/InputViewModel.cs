@@ -367,7 +367,7 @@ namespace TaskCards.ViewModels {
 				index++;
 			}
 
-			int maxItemCount = 5;
+			int maxItemCount = 4;
 			if (entityList.Count < maxItemCount) {
 				for (int i = 0; i < maxItemCount - entityList.Count; i++) {
 					gdProjects.Children.Add(new Grid(), 0, index);
@@ -431,6 +431,7 @@ namespace TaskCards.ViewModels {
 				var selectedItemDto = new SelectedItemDto();
 				selectedItemDto.Id = i;
 				selectedItemDto.Name = GetColorText((ColorDiv)selectedItemDto.Id);
+				selectedItemDto.Color = LayoutUtility.GetColorByColorDiv((ColorDiv)selectedItemDto.Id);
 
 				this.ColorItems.Add(selectedItemDto);
 			}

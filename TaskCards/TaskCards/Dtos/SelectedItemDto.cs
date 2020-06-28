@@ -1,4 +1,6 @@
-﻿namespace TaskCards.Dtos {
+﻿using Xamarin.Forms;
+
+namespace TaskCards.Dtos {
 
 	/// <summary>
 	/// 選択項目DTO
@@ -14,5 +16,10 @@
 		/// 名称
 		/// </summary>
 		public string Name { set; get; }
+
+		/// <summary>
+		/// カラー
+		/// </summary>
+		public Color Color { set; get; }
 	}
 }

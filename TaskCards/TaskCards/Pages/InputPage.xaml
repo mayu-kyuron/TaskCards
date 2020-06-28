@@ -313,10 +313,13 @@
                                 <DataTemplate>
                                     <ViewCell>
                                         <Grid Style="{StaticResource SelectDialogItemGrid}">
-                                            <BoxView Grid.Column="0" />
+                                            <BoxView
+                                                Grid.Column="0"
+                                                BackgroundColor="{Binding Color}" />
+                                            <BoxView Grid.Column="1" />
                                             <Label
-                                                Grid.Column="1"
-                                                Grid.ColumnSpan="28"
+                                                Grid.Column="2"
+                                                Grid.ColumnSpan="27"
                                                 Style="{StaticResource SelectDialogItemLabel}" />
                                             <BoxView Grid.Column="29" />
                                         </Grid>
