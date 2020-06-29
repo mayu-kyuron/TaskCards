@@ -217,6 +217,7 @@ namespace TaskCards.Pages {
 
 			switch (this.exPageDiv) {
 				case PageDiv.カレンダー:
+				case PageDiv.タスク:
 					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
 					break;
 			}

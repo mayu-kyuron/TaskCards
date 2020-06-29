@@ -78,6 +78,20 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
+		/// タスクタイトルクリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickTaskTitle(object sender, EventArgs e) {
+
+			long taskId = long.Parse(((Grid)sender).ClassId);
+
+			// タスクの確認ページに遷移
+			Application.Current.MainPage = new ConfirmPage(CalendarViewModel.selectedDate,
+				TableDiv.タスク, PageDiv.タスク, taskId);
+		}
+
+		/// <summary>
 		/// プロジェクト群を設定する。
 		/// </summary>
 		private void SetProjects() {
@@ -294,6 +308,10 @@ namespace TaskCards.Pages {
 			// タイトル用グリッドを生成
 			var titleGrid = GetTaskTitleGrid(task);
 
+			var tgrTitleGrid = new TapGestureRecognizer();
+			tgrTitleGrid.Tapped += (sender, e) => OnClickTaskTitle(sender, e);
+			titleGrid.GestureRecognizers.Add(tgrTitleGrid);
+
 			// タスク進捗用グリッドを生成
 			var progressGrid = GetTaskProgressGrid(project, task);
 
@@ -320,6 +338,7 @@ namespace TaskCards.Pages {
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				ColumnSpacing = 0,
 				RowSpacing = 0,
+				ClassId = task.Id.ToString(),
 			};
 
 			// タイトルラベルを生成

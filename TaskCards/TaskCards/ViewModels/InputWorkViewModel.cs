@@ -27,6 +27,8 @@ namespace TaskCards.ViewModels {
 		public TimeSpan EndTime { get; set; }
 		public long ProjectId { get; set; }
 
+		public double exProgressRate = 0;
+
 		public InputWorkViewModel(long taskId, double height) {
 
 			// レイアウト全体の高さの設定
@@ -45,12 +47,15 @@ namespace TaskCards.ViewModels {
 			ProjectId = project.Id;
 			ProjectText = project.Title;
 			TitleText = task.Title;
+			ProgressRateText = task.ProgressRate.ToString("0");
 			NotesText = task.Notes;
 
 			// 開始時間：現在時間－現在の分数（例：12:34→12:00）
 			// 終了時間：現在時間＋1時間－現在の分数（例：12:34→13:00）
 			StartTime = new TimeSpan(DateTime.Now.Hour, 0, 0);
 			EndTime = new TimeSpan(DateTime.Now.AddHours(1).Hour, 0, 0);
+
+			this.exProgressRate = task.ProgressRate;
 		}
 	}
 }

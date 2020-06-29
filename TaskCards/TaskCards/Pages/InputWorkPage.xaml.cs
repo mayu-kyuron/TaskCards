@@ -201,6 +201,18 @@ namespace TaskCards.Pages {
 				return false;
 			}
 
+			// 進捗率の前回より大きい数値かチェック
+			if (progressRateNum <= this.viewModel.exProgressRate) {
+
+				Device.BeginInvokeOnMainThread((async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						String.Format(StringConst.MessageWrongType, "進捗率", "前回より大きい数字"),
+						StringConst.DialogAnswerPositive);
+				}));
+
+				return false;
+			}
+
 			// 進捗率の整数チェック
 			if ((progressRateNum - Math.Floor(progressRateNum) != 0)) {
 
@@ -239,6 +251,7 @@ namespace TaskCards.Pages {
 				// TODO 仮のメンバーを初期選択に
 				if (taskMember.MemberId == 1) taskMemberId = taskMember.Id;
 			}
+			if (taskMemberId == 0) return;
 
 			// 過去の作業時間を加算し、現時点の総作業時間を取得
 			TimeSpan totalWorkTime = new TimeSpan(0, 0, 0);
