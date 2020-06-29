@@ -70,9 +70,11 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickAddTask(object sender, EventArgs e) {
 
+			long projectId = long.Parse(((Image)sender).ClassId);
+
 			// タスク追加用の入力ページに遷移
-			//Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate,
-			//	TableDiv.タスク, PageDiv.タスク, ExecuteDiv.追加);
+			Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate,
+				TableDiv.タスク, PageDiv.タスク, ExecuteDiv.追加, projectId: projectId);
 		}
 
 		/// <summary>
@@ -175,6 +177,7 @@ namespace TaskCards.Pages {
 			var addImage = new Image {
 				Source = ImageSource.FromResource(StringConst.ImageFolderPath + "btn_add.png"),
 				Aspect = Aspect.AspectFit,
+				ClassId = project.Id.ToString(),
 			};
 
 			var tgrAddImage = new TapGestureRecognizer();

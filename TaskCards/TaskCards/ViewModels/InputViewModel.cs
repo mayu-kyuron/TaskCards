@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 using TaskCards.Consts;
 using TaskCards.Dao;
@@ -65,9 +66,9 @@ namespace TaskCards.ViewModels {
 		private Grid gdDialogColor;
 		private ResourceDictionary resources;
 
-		public InputViewModel(DateTime selectedDate, TableDiv tableDiv, ExecuteDiv executeDiv, long id, BaseEvent tempEvent,
-			double height, ContentView cvDialogBack, Grid gdDialogRepeat, Grid gdDialogProject, Grid gdProjects,
-			Grid gdDialogColor, Switch swAllDay, ResourceDictionary resources) {
+		public InputViewModel(DateTime selectedDate, TableDiv tableDiv, ExecuteDiv executeDiv, long id, long projectId,
+			BaseEvent tempEvent, double height, ContentView cvDialogBack, Grid gdDialogRepeat, Grid gdDialogProject,
+			Grid gdProjects, Grid gdDialogColor, Switch swAllDay, ResourceDictionary resources) {
 
 			this.cvDialogBack = cvDialogBack;
 			this.gdDialogRepeat = gdDialogRepeat;
@@ -115,7 +116,7 @@ namespace TaskCards.ViewModels {
 				case TableDiv.タスク:
 					switch (executeDiv) {
 						case ExecuteDiv.追加:
-							SetAddScheduleTaskProject(tableDiv, selectedDate, projectList);
+							SetAddScheduleTaskProject(tableDiv, selectedDate, projectList, projectId);
 							break;
 						case ExecuteDiv.更新:
 							SetEditTask(id, tempEvent);
@@ -181,7 +182,12 @@ namespace TaskCards.ViewModels {
 		/// <summary>
 		/// スケジュール・タスク・プロジェクト追加時の項目を設定する。
 		/// </summary>
-		private void SetAddScheduleTaskProject(TableDiv tableDiv, DateTime selectedDate, List<Project> projectList) {
+		/// <param name="tableDiv">テーブル区分</param>
+		/// <param name="selectedDate">選択された日付</param>
+		/// <param name="projectList">プロジェクトリスト</param>
+		/// <param name="projectId">（オプション）プロジェクトID</param>
+		private void SetAddScheduleTaskProject(TableDiv tableDiv, DateTime selectedDate, List<Project> projectList,
+			long projectId = 0) {
 
 			if (tableDiv == TableDiv.予定) {
 
@@ -201,13 +207,21 @@ namespace TaskCards.ViewModels {
 			// プロジェクトの初期値を設定
 			if (tableDiv == TableDiv.予定 || tableDiv == TableDiv.タスク) {
 
-				if (projectList.Count == 0) {
-					ProjectId = NotSelectedProjectId;
-					this.resources[ProjectTextKey] = string.Format(StringConst.MessageEntryNeeded, StringConst.WordProject);
+				Project project = (projectId == 0) ? null : projectList.FirstOrDefault(p => p.Id == projectId);
+
+				if (project == null) {
+					if (projectList.Count == 0) {
+						ProjectId = NotSelectedProjectId;
+						this.resources[ProjectTextKey] = string.Format(StringConst.MessageEntryNeeded, StringConst.WordProject);
+					}
+					else {
+						ProjectId = projectList[0].Id;
+						this.resources[ProjectTextKey] = projectList[0].Title;
+					}
 				}
 				else {
-					ProjectId = projectList[0].Id;
-					this.resources[ProjectTextKey] = projectList[0].Title;
+					ProjectId = project.Id;
+					this.resources[ProjectTextKey] = project.Title;
 				}
 			}
 

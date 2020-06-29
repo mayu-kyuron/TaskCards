@@ -25,17 +25,21 @@ namespace TaskCards.Pages {
 		PageDiv exPageDiv; // 元のページ区分
 		ExecuteDiv executeDiv; // 実行区分
 		long id; // ID
+		long projectId; // プロジェクトID
 
 		public InputPage() {
 			Initialize();
 		}
 
-		public InputPage(DateTime selectedDate, TableDiv tableDiv, PageDiv exPageDiv, ExecuteDiv executeDiv, long id = 0) {
+		public InputPage(DateTime selectedDate, TableDiv tableDiv, PageDiv exPageDiv, ExecuteDiv executeDiv,
+			long id = 0, long projectId = 0) {
+
 			this.selectedDate = selectedDate;
 			this.tableDiv = tableDiv;
 			this.exPageDiv = exPageDiv;
 			this.executeDiv = executeDiv;
 			this.id = id;
+			this.projectId = projectId;
 			Initialize();
 		}
 
@@ -96,8 +100,8 @@ namespace TaskCards.Pages {
 
 			SetControlsVisibility();
 
-			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, tempEvent,
-				Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, gdDialogColor, swAllDay, Resources);
+			this.viewModel = new InputViewModel(this.selectedDate, this.tableDiv, this.executeDiv, this.id, this.projectId,
+				tempEvent, Height, cvDialogBack, gdDialogRepeat, gdDialogProject, gdProjects, gdDialogColor, swAllDay, Resources);
 			BindingContext = this.viewModel;
 
 			if (this.id == 0 && this.executeDiv == ExecuteDiv.更新) this.executeDiv = ExecuteDiv.追加;
@@ -279,6 +283,7 @@ namespace TaskCards.Pages {
 			switch (this.exPageDiv) {
 
 				case PageDiv.カレンダー:
+				case PageDiv.タスク:
 					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
 					break;
 
