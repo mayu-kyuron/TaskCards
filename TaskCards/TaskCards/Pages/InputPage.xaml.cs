@@ -731,7 +731,7 @@ namespace TaskCards.Pages {
 				}
 				else {
 					foreach (TaskProgress taskProgress in taskProgressList) {
-						taskProgressDao.Delete(taskProgress.TaskMemberId);
+						taskProgressDao.Delete(taskProgress.Id);
 					}
 				}
 			}

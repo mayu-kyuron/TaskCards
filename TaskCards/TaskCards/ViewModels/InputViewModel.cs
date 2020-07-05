@@ -350,8 +350,8 @@ namespace TaskCards.ViewModels {
 			List<ProjectMember> projectMemberList = projectMemberDao.GetProjectMemberListByProjectId(project.Id);
 
 			TitleText = project.Title;
-			StartDate = project.StartDate;
-			EndDate = project.EndDate;
+			StartDate = project.ExpectedStartDate;
+			EndDate = project.ExpectedEndDate;
 			ColorDiv = project.ColorDiv;
 			this.resources[ColorTextKey] = GetColorText(project.ColorDiv);
 			ExpectedSalesText = project.ExpectedSales.ToString();

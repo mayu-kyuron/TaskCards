@@ -81,8 +81,8 @@ namespace TaskCards.Dao {
 		/// <summary>
 		/// タスク進捗を削除する。
 		/// </summary>
-		/// <param name="taskMemberId">タスクメンバーID</param>
-		public void Delete(long taskMemberId) {
+		/// <param name="id">ID</param>
+		public void Delete(long id) {
 			var preferences = new Preferences();
 
 			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
@@ -90,10 +90,7 @@ namespace TaskCards.Dao {
 				// 自動マイグレーション
 				con.CreateTable<TaskProgress>();
 
-				TaskProgress taskProgress
-					= (from p in con.Table<TaskProgress>()
-					   where p.TaskMemberId == taskMemberId
-					   select p).FirstOrDefault();
+				TaskProgress taskProgress = (from p in con.Table<TaskProgress>() where p.Id == id select p).FirstOrDefault();
 
 				if (taskProgress != null) con.Delete(taskProgress);
 			}

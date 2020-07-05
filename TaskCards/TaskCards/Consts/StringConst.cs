@@ -13,6 +13,7 @@
 		public const string WordTask = "タスク";
 		public const string WordProject = "プロジェクト";
 		public const string WordMember = "メンバー";
+		public const string WordProgressRate = "進捗率";
 
 		// ダイアログタイトル
 		public const string DialogTitleConfirm = "確認";
@@ -52,6 +53,7 @@
 		public const string MessageInputCancelConfirm = "入力した内容は失われます。\nキャンセルしてもよろしいですか？";
 		public const string MessageWrongDateTime = "{0:s}は{1:s}より\n前でなければなりません。";
 		public const string MessageDeleteConfirm = "削除したデータは元に戻せません。\nこの{0:s}を削除しますか？";
+		public const string MessageDeleteTaskProgressConfirm = "{0:s}\n\nこの作業記録を削除します。\nよろしいですか？";
 
 		// 固有メッセージ
 		public const string LogoutConfirmMessage = "ログアウトして\nログイン画面に戻ります。\nよろしいですか？";
@@ -74,6 +76,7 @@
 		public const string DateTappedDialogDateFormat = "yyyy年MM月dd日(ddd)";
 		public const string InputConfirmDateFormat = "MM月dd日(ddd)";
 		public const string InputConfirmTimeFormat = "HH:mm";
+		public const string TaskProgressDateTimeFormat = "yyyy/MM/dd(ddd) HH:mm";
 
 		// 繰り返しタイプ
 		public const string RepeatNone = "繰り返しなし";

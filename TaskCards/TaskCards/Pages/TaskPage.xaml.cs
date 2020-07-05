@@ -5,6 +5,7 @@ using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
 using TaskCards.Entities;
+using TaskCards.MasterPages;
 using TaskCards.Utilities;
 using TaskCards.ViewModels;
 using Xamarin.Forms;
@@ -89,6 +90,59 @@ namespace TaskCards.Pages {
 			// タスクの確認ページに遷移
 			Application.Current.MainPage = new ConfirmPage(CalendarViewModel.selectedDate,
 				TableDiv.タスク, PageDiv.タスク, taskId);
+		}
+
+		/// <summary>
+		/// タスク進捗バークリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickTaskProgressBar(object sender, EventArgs e) {
+
+			long taskId = long.Parse(((Grid)sender).ClassId);
+
+			TaskProgress lastTaskProgress = GetTaskProgressList(taskId).LastOrDefault();
+			if (lastTaskProgress == null) return;
+
+			// 作業記録削除の確認ダイアログを表示
+			ShowDeleteTaskProgressConfirmDialog(taskId, lastTaskProgress);
+		}
+
+		/// <summary>
+		/// 作業記録削除の確認ダイアログを表示する。
+		/// </summary>
+		/// <param name="taskId">タスクID</param>
+		/// <param name="taskProgress">タスク進捗データ</param>
+		private void ShowDeleteTaskProgressConfirmDialog(long taskId, TaskProgress taskProgress) {
+
+			var taskDao = new TaskDao();
+			Task task = taskDao.GetTaskById(taskId);
+
+			var projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(task.ProjectId);
+
+			string startDateStr = taskProgress.StartDate.ToString(StringConst.TaskProgressDateTimeFormat);
+			string endDateStr = taskProgress.EndDate.ToString(StringConst.InputConfirmTimeFormat);
+
+			// 表示する作業記録の詳細を設定
+			string taskProgressDescription = string.Format("{0:s}（{1:s}）\n{2:s}〜{3:s}\n{4:s} {5:s}％",
+				task.Title, project.Title,
+				startDateStr, endDateStr,
+				StringConst.WordProgressRate, taskProgress.ProgressRate.ToString("0")
+			);
+
+			// ダイアログ表示
+			Device.BeginInvokeOnMainThread(async () => {
+				var result = await DisplayAlert(StringConst.DialogTitleConfirm,
+					string.Format(StringConst.MessageDeleteTaskProgressConfirm, taskProgressDescription),
+					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
+
+				// 作業記録を削除後、ページを再表示する。
+				if (result) {
+					DeleteLastTaskProgressAndUpdateParents(taskProgress, task, project);
+					Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
+				}
+			});
 		}
 
 		/// <summary>
@@ -390,6 +444,10 @@ namespace TaskCards.Pages {
 			// 進捗バー用グリッドを生成
 			var progressBarGrid = GetTaskProgressBarGrid(project, task);
 
+			var tgrProgressBarGrid = new TapGestureRecognizer();
+			tgrProgressBarGrid.Tapped += (sender, e) => OnClickTaskProgressBar(sender, e);
+			progressBarGrid.GestureRecognizers.Add(tgrProgressBarGrid);
+
 			// グリッドに項目を追加
 			grid.Children.Add(progressBarGrid, 0, 1, 0, 2);
 			grid.Children.Add(new BoxView(), 0, 1, 2, 3);
@@ -412,6 +470,7 @@ namespace TaskCards.Pages {
 				ColumnSpacing = 0,
 				RowSpacing = 0,
 				BackgroundColor = Color.Beige,
+				ClassId = task.Id.ToString(),
 			};
 
 			int index = 0;
@@ -438,7 +497,7 @@ namespace TaskCards.Pages {
 			}
 
 			// グリッド末尾に空白を追加
-			grid.Children.Add(new BoxView(), index, index + (100 - index), 0, 1);
+			if (index < 100) grid.Children.Add(new BoxView(), index, index + (100 - index), 0, 1);
 
 			return grid;
 		}
@@ -500,6 +559,51 @@ namespace TaskCards.Pages {
 		/// <returns>変換後の整数</returns>
 		private int GetRowNum(double height) {
 			return (int)Math.Round(height / 15, 0, MidpointRounding.AwayFromZero);
+		}
+
+		/// <summary>
+		/// 前回のタスク進捗を削除し、その親データ群を更新する。
+		/// </summary>
+		/// <param name="taskProgress">タスク進捗データ</param>
+		/// <param name="task">タスクデータ</param>
+		/// <param name="project">プロジェクトデータ</param>
+		private void DeleteLastTaskProgressAndUpdateParents(TaskProgress taskProgress, Task task, Project project) {
+
+			// 前回のタスク進捗を削除
+			var taskProgressDao = new TaskProgressDao();
+			taskProgressDao.Delete(taskProgress.Id);
+
+			var taskMemberDao = new TaskMemberDao();
+			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(task.Id);
+
+			// 過去のタスク進捗をすべて取得
+			var taskProgressList = new List<TaskProgress>();
+			foreach (TaskMember taskMember in taskMemberList) {
+				taskProgressList.AddRange(taskProgressDao.GetTaskProgressListByTaskMemberId(taskMember.Id));
+			}
+
+			// 過去の作業時間を加算し、現時点の総作業時間を取得
+			var totalWorkTime = new TimeSpan(0, 0, 0);
+			foreach (TaskProgress pastTaskProgress in taskProgressList) {
+				totalWorkTime += pastTaskProgress.EndDate - pastTaskProgress.StartDate;
+			}
+
+			// 前前回のタスク進捗を取得
+			TaskProgress lastTaskProgress = GetTaskProgressList(task.Id).LastOrDefault();
+
+			// タスクを更新
+			var taskDao = new TaskDao();
+			task.TotalWorkTime = totalWorkTime;
+			task.ProgressRate = (lastTaskProgress == null) ? 0 : lastTaskProgress.ProgressRate;
+			task.Notes = null;
+			taskDao.Update(task);
+
+			// プロジェクトを更新
+			if (taskProgressList.Count == 0) {
+				var projectDao = new ProjectDao();
+				project.StartDate = new DateTime();
+				projectDao.Update(project);
+			}
 		}
 	}
 }
