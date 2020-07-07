@@ -293,6 +293,23 @@
                 <Setter Property="Text" Value="{StaticResource yen}" />
             </Style>
 
+            <Style x:Key="ConfirmSalesPrefixLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.ColumnSpan" Value="1" />
+            </Style>
+
+            <Style x:Key="ConfirmSalesScrollView" TargetType="{x:Type ScrollView}">
+                <Setter Property="Grid.ColumnSpan" Value="2" />
+            </Style>
+
+            <Style x:Key="ConfirmSalesLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="ConfirmSalesSuffixLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
+                <Setter Property="Grid.ColumnSpan" Value="1" />
+                <Setter Property="Text" Value="{StaticResource yen}" />
+            </Style>
+
             <Style x:Key="ConfirmTimeLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource InputConfirmLabel}">
                 <Setter Property="Grid.ColumnSpan" Value="3" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />

@@ -62,6 +62,11 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickProjectTitle(object sender, EventArgs e) {
 
+			long projectId = long.Parse(((Label)sender).ClassId);
+
+			// プロジェクトの確認ページに遷移
+			Application.Current.MainPage = new ConfirmPage(CalendarViewModel.selectedDate,
+				TableDiv.プロジェクト, PageDiv.タスク, projectId);
 		}
 
 		/// <summary>
@@ -235,6 +240,7 @@ namespace TaskCards.Pages {
 				FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
 				VerticalTextAlignment = TextAlignment.Center,
 				LineBreakMode = LineBreakMode.TailTruncation,
+				ClassId = project.Id.ToString(),
 			};
 
 			var tgrLabel = new TapGestureRecognizer();

@@ -1,5 +1,6 @@
 ﻿using SQLite;
 using System.Collections.Generic;
+using System.Linq;
 using TaskCards.Data;
 using TaskCards.Entities;
 
@@ -37,6 +38,25 @@ namespace TaskCards.Dao {
 			}
 
 			return entityList;
+		}
+
+		/// <summary>
+		/// タスクIDから登録順のタスク進捗リストを取得する。
+		/// </summary>
+		/// <param name="taskId">タスクID</param>
+		/// <returns>登録順のタスク進捗リスト</returns>
+		public List<TaskProgress> GetOrderedTaskProgressListByTaskId(long taskId) {
+
+			var taskMemberDao = new TaskMemberDao();
+			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(taskId);
+
+			// 過去のタスク進捗をすべて取得
+			var taskProgressList = new List<TaskProgress>();
+			foreach (TaskMember taskMember in taskMemberList) {
+				taskProgressList.AddRange(GetTaskProgressListByTaskMemberId(taskMember.Id));
+			}
+
+			return taskProgressList.OrderBy(e => e.RegisterOrder).ToList();
 		}
 
 		/// <summary>

@@ -108,14 +108,37 @@
                     <Grid x:Name="gdSales" Grid.Row="13" Style="{StaticResource NoSpacingFullGrid}" IsVisible="False">
                         <Label
                             Grid.Row="0"
-                            Grid.RowSpan="2"
                             Style="{StaticResource InputConfirmSmallTitleLabel}"
                             Text="{StaticResource sales}"/>
-                        <ScrollView Grid.Row="2" Grid.RowSpan="3">
+                        <Grid Grid.Row="1" Grid.RowSpan="2">
                             <Label
-                                Style="{StaticResource InputConfirmLabel}"
-                                Text="{Binding ExpectedSalesText}"/>
-                        </ScrollView>
+                                Grid.Column="0"
+                                Style="{StaticResource ConfirmSalesPrefixLabel}"
+                                Text="{StaticResource expectedSales}"/>
+                            <ScrollView Grid.Column="1" Style="{StaticResource ConfirmSalesScrollView}">
+                                <Label
+                                    Style="{StaticResource ConfirmSalesLabel}"
+                                    Text="{Binding ExpectedSalesText}"/>
+                            </ScrollView>
+                            <Label
+                                Grid.Column="3"
+                                Style="{StaticResource ConfirmSalesSuffixLabel}"/>
+                            <Image
+                                Grid.Column="4"
+                                Style="{StaticResource InputConfirmSalesArrowImage}"/>
+                            <Label
+                                Grid.Column="5"
+                                Style="{StaticResource ConfirmSalesPrefixLabel}"
+                                Text="{StaticResource actualSales}"/>
+                            <ScrollView Grid.Column="6" Style="{StaticResource ConfirmSalesScrollView}">
+                                <Label
+                                    Style="{StaticResource ConfirmSalesLabel}"
+                                    Text="{Binding SalesText}"/>
+                            </ScrollView>
+                            <Label
+                                Grid.Column="8"
+                                Style="{StaticResource ConfirmSalesSuffixLabel}"/>
+                        </Grid>
                     </Grid>
 
                 </Grid>
