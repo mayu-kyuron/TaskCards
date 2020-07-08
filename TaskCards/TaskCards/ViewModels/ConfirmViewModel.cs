@@ -32,9 +32,6 @@ namespace TaskCards.ViewModels {
 		public string ExpectedSalesText { get; set; }
 		public string SalesText { get; set; }
 
-		public long ProjectId { get; set; }
-		public List<long> MemberIdList { get; set; } = new List<long>();
-
 		public ConfirmViewModel(TableDiv tableDiv, long id, double height, Grid gdWorkTime, Grid gdMember) {
 
 			// レイアウト全体の高さの設定
@@ -79,7 +76,6 @@ namespace TaskCards.ViewModels {
 			}
 
 			TopDateText = task.StartDate.ToString(StringConst.DateTappedDialogDateFormat);
-			ProjectId = project.Id;
 			ProjectText = project.Title;
 			TitleText = task.Title;
 			StartTimeText = task.StartDate.ToString(StringConst.InputConfirmDateFormat);

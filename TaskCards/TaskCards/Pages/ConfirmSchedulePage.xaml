@@ -61,36 +61,20 @@
                         HorizontalOptions="Center"
                         IsVisible="False"/>
 
-                    <!--
-                    <ScrollView x:Name="svMember" Grid.Row="5" Grid.RowSpan="3">
-                        <Grid x:Name="ltMember" Style="{StaticResource NoSpacingFullGrid}" HeightRequest="{Binding MemberHeight}">
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
-                                <Label
-                                    Style="{StaticResource InputMemberNameLabel}"
-                                    Text="{Binding Member1Text}"/>
-                                <Label
-                                    Style="{StaticResource InputMemberEditLabel}"
-                                    Text="{StaticResource edit}"/>
-                                <Switch
-                                    x:Name="swMemberEdit1"
-                                    Style="{StaticResource InputMemberSwitch}"/>
-                                <Image
-                                    x:Name="imgMemberCancel1"
-                                    Style="{StaticResource InputMemberCancelImage}"/>
-                            </Grid>
-
-                        </Grid>
-                    </ScrollView>
-                    -->
-
                     <Grid Grid.Row="3" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
+                        <Label
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Style="{StaticResource InputConfirmSmallTitleLabel}"
+                            Text="{StaticResource member}"/>
+                        <ScrollView Grid.Row="2" Grid.RowSpan="9">
+                            <Grid x:Name="gdMember" Style="{StaticResource NoSpacingFullGrid}">
+                                <!-- プログラムで動的に参加者を追加 -->
+                            </Grid>
+                        </ScrollView>
+                    </Grid>
+
+                    <Grid Grid.Row="6" Grid.RowSpan="3" Style="{StaticResource NoSpacingFullGrid}">
                         <Label
                             Grid.Row="0"
                             Grid.RowSpan="2"
@@ -104,7 +88,7 @@
                         </ScrollView>
                     </Grid>
 
-                    <Grid Grid.Row="6" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid Grid.Row="9" Style="{StaticResource NoSpacingFullGrid}">
                         <Label
                             Grid.Row="0"
                             Grid.RowSpan="2"
@@ -118,8 +102,8 @@
                     </Grid>
 
                     <BoxView
-                        Grid.Row="7"
-                        Grid.RowSpan="7"/>
+                        Grid.Row="10"
+                        Grid.RowSpan="4"/>
 
                 </Grid>
 

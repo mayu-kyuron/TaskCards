@@ -69,7 +69,7 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
 		private void OnSizeChanged(object sender, EventArgs args) {
-			this.viewModel = new ConfirmScheduleViewModel(this.scheduleId, Height, gdTime, lblAllDay);
+			this.viewModel = new ConfirmScheduleViewModel(this.scheduleId, Height, gdTime, lblAllDay, gdMember);
 			BindingContext = this.viewModel;
 		}
 
