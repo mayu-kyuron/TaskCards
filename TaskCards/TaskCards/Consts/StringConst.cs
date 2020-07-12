@@ -54,7 +54,9 @@
 		public const string MessageWrongDateTime = "{0:s}は{1:s}より\n前でなければなりません。";
 		public const string MessageDeleteConfirm = "削除したデータは元に戻せません。\nこの{0:s}を削除しますか？";
 		public const string MessageDeleteTaskProgressConfirm = "{0:s}\n\nこの作業記録を削除します。\nよろしいですか？";
-		public const string MessageDeleteMyProjectError = "マイプロジェクトは削除できません。";
+		public const string MessageFinishProjectConfirm = "このプロジェクトを終了します。\nよろしいですか？";
+		public const string MessageMyProjectError = "マイプロジェクトは{0:s}できません。";
+		public const string MessageRestartProjectSuccess = "プロジェクトを再開しました。";
 
 		// 固有メッセージ
 		public const string LogoutConfirmMessage = "ログアウトして\nログイン画面に戻ります。\nよろしいですか？";

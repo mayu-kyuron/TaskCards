@@ -15,6 +15,7 @@
             <x:String x:Key="edit">編集</x:String>
             <x:String x:Key="delete">削除</x:String>
             <x:String x:Key="finish">終了</x:String>
+            <x:String x:Key="restart">再開</x:String>
             <x:String x:Key="place">場所</x:String>
             <x:String x:Key="notes">メモ</x:String>
             <x:String x:Key="dailyTime"> 時間 / 日</x:String>

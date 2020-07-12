@@ -186,11 +186,18 @@
                             <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
                         </Grid>
 
-                        <Grid x:Name="gdFinishProject" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}">
+                        <Grid x:Name="gdFinishProject" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}" IsVisible="False">
                             <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
                             <Label
                                 Style="{StaticResource SelectOptionItemLabel}"
                                 Text="{StaticResource finish}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
+                        <Grid x:Name="gdRestartProject" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}" IsVisible="False">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource restart}"/>
                             <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
                         </Grid>
 

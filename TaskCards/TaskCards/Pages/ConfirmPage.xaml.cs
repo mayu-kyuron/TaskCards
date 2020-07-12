@@ -71,16 +71,36 @@ namespace TaskCards.Pages {
 			gdDeleteNormal.GestureRecognizers.Add(tgrDelete);
 			gdDeleteProject.GestureRecognizers.Add(tgrDelete);
 
+			var tgrFinish = new TapGestureRecognizer();
+			tgrFinish.Tapped += (sender, e) => OnClickFinish(sender, e);
+			gdFinishProject.GestureRecognizers.Add(tgrFinish);
+
+			var tgrRestart = new TapGestureRecognizer();
+			tgrRestart.Tapped += (sender, e) => OnClickRestart(sender, e);
+			gdRestartProject.GestureRecognizers.Add(tgrRestart);
+
 			var tgrAdd = new TapGestureRecognizer();
 			tgrAdd.Tapped += (sender, e) => OnClickAdd(sender, e);
 			gdAdd.GestureRecognizers.Add(tgrAdd);
 
 			// 各コントロールの表示切り替え
 			switch (this.tableDiv) {
+
 				case TableDiv.タスク:
 					break;
+
 				case TableDiv.プロジェクト:
 					gdSales.IsVisible = true;
+
+					var projectDao = new ProjectDao();
+					Project project = projectDao.GetProjectById(this.id);
+
+					if (project.EndDate.Equals(DateTime.MinValue)) {
+						gdFinishProject.IsVisible = true;
+					}
+					else {
+						gdRestartProject.IsVisible = true;
+					}
 					break;
 			}
 		}
@@ -196,7 +216,7 @@ namespace TaskCards.Pages {
 			if (this.tableDiv == TableDiv.プロジェクト && this.id == 1) {
 				Device.BeginInvokeOnMainThread(async () => {
 					await DisplayAlert(StringConst.DialogTitleError,
-						StringConst.MessageDeleteMyProjectError, StringConst.DialogAnswerPositive);
+						string.Format(StringConst.MessageMyProjectError, "削除"), StringConst.DialogAnswerPositive);
 				});
 				return;
 			}
@@ -231,6 +251,57 @@ namespace TaskCards.Pages {
 					}
 				}
 			});
+		}
+
+		/// <summary>
+		/// 終了クリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickFinish(object sender, EventArgs e) {
+
+			// マイプロジェクトは終了させない。
+			if (this.id == 1) {
+				Device.BeginInvokeOnMainThread(async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						string.Format(StringConst.MessageMyProjectError, "終了"), StringConst.DialogAnswerPositive);
+				});
+				return;
+			}
+
+			// ダイアログ表示
+			Device.BeginInvokeOnMainThread(async () => {
+				var result = await DisplayAlert(StringConst.DialogTitleConfirm,
+					StringConst.MessageFinishProjectConfirm,
+					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
+
+				// プロジェクトを更新後、前のページにもどる。
+				if (result) {
+					FinishProject(this.id);
+					OnPageBack();
+				}
+			});
+		}
+
+		/// <summary>
+		/// 再開クリックイベント
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnClickRestart(object sender, EventArgs e) {
+
+			// プロジェクトを更新
+			RestartProject(this.id);
+
+			// 完了ダイアログ
+			Device.BeginInvokeOnMainThread(async () => {
+				await DisplayAlert(StringConst.DialogTitleSuccess,
+					StringConst.MessageRestartProjectSuccess, StringConst.DialogAnswerPositive);
+			});
+
+			// ページを再表示
+			Application.Current.MainPage = new ConfirmPage(this.selectedDate,
+				TableDiv.プロジェクト, PageDiv.タスク, this.id);
 		}
 
 		/// <summary>
@@ -330,6 +401,38 @@ namespace TaskCards.Pages {
 			// 全プロジェクトメンバーの削除
 			var projectMemberDao = new ProjectMemberDao();
 			projectMemberDao.DeleteAllByProjectId(projectId);
+		}
+
+		/// <summary>
+		/// プロジェクトを終了する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		private void FinishProject(long projectId) {
+
+			var projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(projectId);
+
+			// プロジェクトの終了日に当日を設定
+			project.EndDate = DateTime.Today;
+
+			// プロジェクトを更新
+			projectDao.Update(project);
+		}
+
+		/// <summary>
+		/// プロジェクトを再開する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		private void RestartProject(long projectId) {
+
+			var projectDao = new ProjectDao();
+			Project project = projectDao.GetProjectById(projectId);
+
+			// プロジェクトの終了日にデフォルト値を設定
+			project.EndDate = new DateTime();
+
+			// プロジェクトを更新
+			projectDao.Update(project);
 		}
 	}
 }

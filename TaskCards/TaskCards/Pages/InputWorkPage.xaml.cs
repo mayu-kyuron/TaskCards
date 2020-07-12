@@ -112,12 +112,6 @@ namespace TaskCards.Pages {
 
 			UserDialogs.Instance.HideLoading();
 
-			// 完了ダイアログ
-			Device.BeginInvokeOnMainThread((async () => {
-				await DisplayAlert(StringConst.DialogTitleSuccess,
-					String.Format(StringConst.MessageSucceeded, "登録"), StringConst.DialogAnswerPositive);
-			}));
-
 			// 遷移
 			GoBackToExPage();
 		}
