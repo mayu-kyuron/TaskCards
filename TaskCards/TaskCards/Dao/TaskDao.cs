@@ -130,7 +130,8 @@ namespace TaskCards.Dao {
 					con.CreateTable<Task>();
 
 					query = con.Table<Task>()
-					.Where(v => v.ProjectId == projectId);
+					.Where(v => v.ProjectId == projectId)
+					.OrderBy(v => v.StartDate);
 				});
 
 				foreach (Task entity in query) {

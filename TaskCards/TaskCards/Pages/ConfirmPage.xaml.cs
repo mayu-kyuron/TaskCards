@@ -63,11 +63,13 @@ namespace TaskCards.Pages {
 
 			var tgrEdit = new TapGestureRecognizer();
 			tgrEdit.Tapped += (sender, e) => OnClickEdit(sender, e);
-			gdEdit.GestureRecognizers.Add(tgrEdit);
+			gdEditNormal.GestureRecognizers.Add(tgrEdit);
+			gdEditProject.GestureRecognizers.Add(tgrEdit);
 
 			var tgrDelete = new TapGestureRecognizer();
 			tgrDelete.Tapped += (sender, e) => OnClickDelete(sender, e);
-			gdDelete.GestureRecognizers.Add(tgrDelete);
+			gdDeleteNormal.GestureRecognizers.Add(tgrDelete);
+			gdDeleteProject.GestureRecognizers.Add(tgrDelete);
 
 			var tgrAdd = new TapGestureRecognizer();
 			tgrAdd.Tapped += (sender, e) => OnClickAdd(sender, e);
@@ -91,6 +93,17 @@ namespace TaskCards.Pages {
 		private void OnSizeChanged(object sender, EventArgs args) {
 			this.viewModel = new ConfirmViewModel(this.tableDiv, this.id, Height, gdWorkTime, gdMember);
 			BindingContext = this.viewModel;
+
+			int rowHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight);
+			int rowCount = (this.tableDiv == TableDiv.プロジェクト) ? 3 : 2;
+
+			double dialogHeight = rowHeight * rowCount + (rowCount - 1);
+			double dialogMarginTop = gdHeader.Height + Height / 62;
+
+			// ダイアログの高さを設定
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogMarginTop });
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogHeight });
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = Height - (dialogMarginTop + dialogHeight) });
 		}
 
 		/// <summary>
@@ -100,6 +113,8 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDialogBack(object sender, EventArgs e) {
 			cvDialogBack.IsVisible = false;
+			gdDialogOptionProject.IsVisible = false;
+			gdDialogOptionNormal.IsVisible = false;
 		}
 
 		/// <summary>
@@ -128,7 +143,15 @@ namespace TaskCards.Pages {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnClickTopRightButton(object sender, EventArgs e) {
+
 			cvDialogBack.IsVisible = true;
+
+			if (this.tableDiv == TableDiv.プロジェクト) {
+				gdDialogOptionProject.IsVisible = true;
+			}
+			else {
+				gdDialogOptionNormal.IsVisible = true;
+			}
 		}
 
 		/// <summary>
@@ -141,7 +164,7 @@ namespace TaskCards.Pages {
 			switch (this.tableDiv) {
 
 				case TableDiv.タスク: {
-						TaskDao taskDao = new TaskDao();
+						var taskDao = new TaskDao();
 						Task task = taskDao.GetTaskById(this.id);
 
 						// タスク編集用の入力ページに遷移
@@ -150,7 +173,14 @@ namespace TaskCards.Pages {
 					}
 					break;
 
-				case TableDiv.プロジェクト:
+				case TableDiv.プロジェクト: {
+						var projectDao = new ProjectDao();
+						Project project = projectDao.GetProjectById(this.id);
+
+						// プロジェクト編集用の入力ページに遷移
+						Application.Current.MainPage = new InputPage(project.ExpectedStartDate,
+							TableDiv.プロジェクト, PageDiv.確認, ExecuteDiv.更新, this.id);
+					}
 					break;
 			}
 		}
@@ -162,6 +192,15 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDelete(object sender, EventArgs e) {
 
+			// マイプロジェクトは削除させない。
+			if (this.tableDiv == TableDiv.プロジェクト && this.id == 1) {
+				Device.BeginInvokeOnMainThread(async () => {
+					await DisplayAlert(StringConst.DialogTitleError,
+						StringConst.MessageDeleteMyProjectError, StringConst.DialogAnswerPositive);
+				});
+				return;
+			}
+
 			string messageArg0 = null;
 			switch (this.tableDiv) {
 				case TableDiv.タスク:
@@ -172,27 +211,26 @@ namespace TaskCards.Pages {
 					break;
 			}
 
-			Device.BeginInvokeOnMainThread((async () => {
+			Device.BeginInvokeOnMainThread(async () => {
 				var result = await DisplayAlert(StringConst.DialogTitleConfirm,
-					String.Format(StringConst.MessageDeleteConfirm, messageArg0),
+					string.Format(StringConst.MessageDeleteConfirm, messageArg0),
 					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
 
 				if (result) {
 					switch (this.tableDiv) {
 
 						case TableDiv.タスク:
-							DeleteTaskAndRelatedData();
+							DeleteTaskAndRelatedData(this.id);
 							OnPageBack();
 							break;
 
 						case TableDiv.プロジェクト:
-							ProjectDao projectDao = new ProjectDao();
-							projectDao.Delete(this.id);
+							DeleteProjectAndRelatedData(this.id);
 							OnPageBack();
 							break;
 					}
 				}
-			}));
+			});
 		}
 
 		/// <summary>
@@ -206,6 +244,11 @@ namespace TaskCards.Pages {
 				case TableDiv.タスク:
 					// 作業記録入力ページに遷移
 					Application.Current.MainPage = new InputWorkPage(this.id);
+					break;
+				case TableDiv.プロジェクト:
+					// タスク追加用の入力ページに遷移
+					Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate,
+						TableDiv.タスク, PageDiv.確認, ExecuteDiv.追加, projectId: this.id);
 					break;
 			}
 		}
@@ -224,24 +267,69 @@ namespace TaskCards.Pages {
 		}
 
 		/// <summary>
+		/// スケジュールとその関連データを削除する。
+		/// </summary>
+		/// <param name="scheduleId">スケジュールID</param>
+		private void DeleteScheduleAndRelatedData(long scheduleId) {
+
+			// スケジュールの削除
+			var scheduleDao = new ScheduleDao();
+			scheduleDao.Delete(scheduleId);
+
+			// 全スケジュールメンバーの削除
+			var scheduleMemberDao = new ScheduleMemberDao();
+			scheduleMemberDao.DeleteAllByScheduleId(scheduleId);
+		}
+
+		/// <summary>
 		/// タスクとその関連データを削除する。
 		/// </summary>
-		private void DeleteTaskAndRelatedData() {
+		/// <param name="taskId">タスクID</param>
+		private void DeleteTaskAndRelatedData(long taskId) {
 
 			// タスクの削除
-			TaskDao taskDao = new TaskDao();
-			taskDao.Delete(this.id);
+			var taskDao = new TaskDao();
+			taskDao.Delete(taskId);
 
 			// 全タスクメンバーの削除
-			TaskMemberDao taskMemberDao = new TaskMemberDao();
-			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(this.id);
-			taskMemberDao.DeleteAllByTaskId(this.id);
+			var taskMemberDao = new TaskMemberDao();
+			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(taskId);
+			taskMemberDao.DeleteAllByTaskId(taskId);
 
 			// 全タスク進捗の削除
-			TaskProgressDao taskProgressDao = new TaskProgressDao();
+			var taskProgressDao = new TaskProgressDao();
 			foreach (TaskMember taskMember in taskMemberList) {
 				taskProgressDao.DeleteAllByTaskMemberId(taskMember.Id);
 			}
+		}
+
+		/// <summary>
+		/// プロジェクトとその関連データを削除する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		private void DeleteProjectAndRelatedData(long projectId) {
+
+			// 全スケジュールと関連データの削除
+			var scheduleDao = new ScheduleDao();
+			List<Schedule> scheduleList = scheduleDao.GetScheduleListByProjectId(projectId);
+			foreach (Schedule schedule in scheduleList) {
+				DeleteScheduleAndRelatedData(schedule.Id);
+			}
+
+			// 全タスクと関連データの削除
+			var taskDao = new TaskDao();
+			List<Task> taskList = taskDao.GetTaskListByProjectId(projectId);
+			foreach (Task task in taskList) {
+				DeleteTaskAndRelatedData(task.Id);
+			}
+
+			// プロジェクトの削除
+			var projectDao = new ProjectDao();
+			projectDao.Delete(projectId);
+
+			// 全プロジェクトメンバーの削除
+			var projectMemberDao = new ProjectMemberDao();
+			projectMemberDao.DeleteAllByProjectId(projectId);
 		}
 	}
 }

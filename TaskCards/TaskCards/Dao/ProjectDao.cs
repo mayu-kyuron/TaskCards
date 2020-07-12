@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SQLite;
 using TaskCards.Data;
 using TaskCards.Entities;
@@ -54,6 +55,15 @@ namespace TaskCards.Dao {
 				if (entity == null) continue;
 
 				entityList.Add(entity);
+			}
+
+			// 予定開始日の降順に並び替える。
+			entityList = entityList.OrderByDescending(v => v.ExpectedStartDate).ToList();
+
+			// マイプロジェクトを先頭に入れ替える。
+			if (entityList.Exists(v => v.Id == 1)) {
+				entityList.Insert(0, entityList.First(v => v.Id == 1));
+				entityList.RemoveAt(entityList.FindLastIndex(v => v.Id == 1));
 			}
 
 			return entityList;

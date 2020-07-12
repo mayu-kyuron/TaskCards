@@ -280,6 +280,14 @@ namespace TaskCards.Pages {
 		/// </summary>
 		private void GoBackToExPage() {
 
+			// プロジェクト確認ページから、タスク追加用ページに遷移していた場合
+			if (this.tableDiv == TableDiv.タスク && this.exPageDiv == PageDiv.確認 && this.executeDiv == ExecuteDiv.追加) {
+
+				Application.Current.MainPage = new ConfirmPage(this.selectedDate,
+					TableDiv.プロジェクト, PageDiv.タスク, this.projectId);
+				return;
+			}
+
 			switch (this.exPageDiv) {
 
 				case PageDiv.カレンダー:
@@ -300,6 +308,8 @@ namespace TaskCards.Pages {
 							break;
 
 						case TableDiv.プロジェクト:
+							Application.Current.MainPage = new ConfirmPage(this.selectedDate,
+								TableDiv.プロジェクト, PageDiv.カレンダー, this.id);
 							break;
 					}
 					break;

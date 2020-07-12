@@ -71,6 +71,14 @@ namespace TaskCards.Pages {
 		private void OnSizeChanged(object sender, EventArgs args) {
 			this.viewModel = new ConfirmScheduleViewModel(this.scheduleId, Height, gdTime, lblAllDay, gdMember);
 			BindingContext = this.viewModel;
+
+			double dialogHeight = (int)Math.Round(Height * LayoutRateConst.ListItemHeight) * 2 + 1;
+			double dialogMarginTop = gdHeader.Height + Height / 62;
+
+			// ダイアログの高さを設定
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogMarginTop });
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = dialogHeight });
+			gdDialogBack.RowDefinitions.Add(new RowDefinition { Height = Height - (dialogMarginTop + dialogHeight) });
 		}
 
 		/// <summary>
@@ -80,6 +88,7 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDialogBack(object sender, EventArgs e) {
 			cvDialogBack.IsVisible = false;
+			gdDialogOptionNormal.IsVisible = false;
 		}
 
 		/// <summary>
@@ -109,6 +118,7 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickTopRightButton(object sender, EventArgs e) {
 			cvDialogBack.IsVisible = true;
+			gdDialogOptionNormal.IsVisible = true;
 		}
 
 		/// <summary>
@@ -133,17 +143,16 @@ namespace TaskCards.Pages {
 		/// <param name="e"></param>
 		private void OnClickDelete(object sender, EventArgs e) {
 
-			Device.BeginInvokeOnMainThread((async () => {
+			Device.BeginInvokeOnMainThread(async () => {
 				var result = await DisplayAlert(StringConst.DialogTitleConfirm, 
-					String.Format(StringConst.MessageDeleteConfirm, StringConst.WordSchedule),
+					string.Format(StringConst.MessageDeleteConfirm, StringConst.WordSchedule),
 					StringConst.DialogAnswerPositive, StringConst.DialogAnswerNegative);
 
 				if (result) {
-					ScheduleDao scheduleDao = new ScheduleDao();
-					scheduleDao.Delete(this.scheduleId);
+					DeleteScheduleAndRelatedData(this.scheduleId);
 					OnPageBack();
 				}
-			}));
+			});
 		}
 
 		/// <summary>
@@ -151,6 +160,21 @@ namespace TaskCards.Pages {
 		/// </summary>
 		private void OnPageBack() {
 			Application.Current.MainPage = new TaskCardsMasterDetailPage(new DetailPage());
+		}
+
+		/// <summary>
+		/// スケジュールとその関連データを削除する。
+		/// </summary>
+		/// <param name="scheduleId">スケジュールID</param>
+		private void DeleteScheduleAndRelatedData(long scheduleId) {
+
+			// スケジュールの削除
+			var scheduleDao = new ScheduleDao();
+			scheduleDao.Delete(scheduleId);
+
+			// 全スケジュールメンバーの削除
+			var scheduleMemberDao = new ScheduleMemberDao();
+			scheduleMemberDao.DeleteAllByScheduleId(scheduleId);
 		}
 	}
 }

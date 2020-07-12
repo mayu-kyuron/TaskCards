@@ -112,6 +112,37 @@ namespace TaskCards.Dao {
 		}
 
 		/// <summary>
+		/// プロジェクトIDからスケジュールリストを取得する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		/// <returns>スケジュールリスト</returns>
+		public List<Schedule> GetScheduleListByProjectId(long projectId) {
+
+			var preferences = new Preferences();
+			var entityList = new List<Schedule>();
+
+			using (var con = new SQLiteConnection(preferences.GetDatabaseFilePath())) {
+				var query = new TableQuery<Schedule>(con);
+
+				con.RunInTransaction(() => {
+
+					// 自動マイグレーション
+					con.CreateTable<Schedule>();
+
+					query = con.Table<Schedule>()
+					.Where(v => v.ProjectId == projectId)
+					.OrderBy(v => v.StartDate);
+				});
+
+				foreach (Schedule entity in query) {
+					entityList.Add(entity);
+				}
+			}
+
+			return entityList;
+		}
+
+		/// <summary>
 		/// 予定を登録する。
 		/// </summary>
 		/// <param name="entity">Entity</param>

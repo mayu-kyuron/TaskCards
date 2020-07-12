@@ -14,6 +14,7 @@
             <x:String x:Key="allDay">終日</x:String>
             <x:String x:Key="edit">編集</x:String>
             <x:String x:Key="delete">削除</x:String>
+            <x:String x:Key="finish">終了</x:String>
             <x:String x:Key="place">場所</x:String>
             <x:String x:Key="notes">メモ</x:String>
             <x:String x:Key="dailyTime"> 時間 / 日</x:String>
@@ -86,6 +87,11 @@
                 <Setter Property="BackgroundColor" Value="Black" />
             </Style>
 
+            <Style x:Key="DialogOptionGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
+                <Setter Property="RowSpacing" Value="1" />
+                <Setter Property="IsVisible" Value="False" />
+            </Style>
+
             <Style x:Key="FullyJustifyingLabel" TargetType="{x:Type Label}">
                 <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
             </Style>
@@ -104,12 +110,25 @@
             <Style x:Key="SelectDialogItemGrid" TargetType="{x:Type Grid}" BasedOn="{StaticResource NoSpacingFullGrid}">
                 <Setter Property="BackgroundColor" Value="White" />
             </Style>
-            
+
             <Style x:Key="SelectDialogItemLabel" TargetType="{x:Type Label}">
                 <Setter Property="Text" Value="{Binding Name}" />
                 <Setter Property="TextColor" Value="#2F4F4F" />
                 <Setter Property="FontSize" Value="Medium" />
                 <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="SelectOptionItemLeftBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="0" />
+            </Style>
+
+            <Style x:Key="SelectOptionItemLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource SelectDialogItemLabel}">
+                <Setter Property="Grid.Column" Value="1" />
+                <Setter Property="Grid.ColumnSpan" Value="10" />
+            </Style>
+
+            <Style x:Key="SelectOptionItemRightBoxView" TargetType="{x:Type BoxView}">
+                <Setter Property="Grid.Column" Value="11" />
             </Style>
 
             <Style x:Key="TopDateLabel" TargetType="{x:Type Label}">

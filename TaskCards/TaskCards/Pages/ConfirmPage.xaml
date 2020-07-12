@@ -24,7 +24,7 @@
 
                 <Grid Style="{StaticResource InputConfirmBaseGrid}">
 
-                    <Grid Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
+                    <Grid x:Name="gdHeader" Grid.Row="0" Style="{StaticResource NoSpacingFullGrid}">
                         <Image
                             x:Name="imgBackButton"
                             Style="{StaticResource BackButtonImage}"/>
@@ -149,11 +149,7 @@
         <ContentView x:Name="cvDialogBack" Style="{StaticResource DialogBackContentView}">
             <Grid x:Name="gdDialogBack" Style="{StaticResource NoSpacingFullGrid}">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="19*" />
-                </Grid.RowDefinitions>
+                <!-- RowDefinitions はプログラムで動的に設定 -->
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="17*" />
@@ -163,24 +159,48 @@
 
                 <Grid x:Name="gdDialogFront" Style="{StaticResource DialogFrontGrid}">
 
-                    <Grid x:Name="gdEdit" Grid.Row="0" Style="{StaticResource SelectDialogItemGrid}">
-                        <BoxView Grid.Column="0" />
-                        <Label
-                            Grid.Column="1"
-                            Grid.ColumnSpan="10"
-                            Style="{StaticResource SelectDialogItemLabel}"
-                            Text="{StaticResource edit}"/>
-                        <BoxView Grid.Column="11"/>
+                    <Grid x:Name="gdDialogOptionNormal" Style="{StaticResource DialogOptionGrid}">
+                        <Grid x:Name="gdEditNormal" Grid.Row="0" Style="{StaticResource SelectDialogItemGrid}">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource edit}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
+
+                        <Grid x:Name="gdDeleteNormal" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource delete}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
                     </Grid>
 
-                    <Grid x:Name="gdDelete" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}">
-                        <BoxView Grid.Column="0" />
-                        <Label
-                            Grid.Column="1"
-                            Grid.ColumnSpan="10"
-                            Style="{StaticResource SelectDialogItemLabel}"
-                            Text="{StaticResource delete}"/>
-                        <BoxView Grid.Column="11"/>
+                    <Grid x:Name="gdDialogOptionProject" Style="{StaticResource DialogOptionGrid}">
+                        <Grid x:Name="gdEditProject" Grid.Row="0" Style="{StaticResource SelectDialogItemGrid}">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource edit}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
+
+                        <Grid x:Name="gdFinishProject" Grid.Row="1" Style="{StaticResource SelectDialogItemGrid}">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource finish}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
+
+                        <Grid x:Name="gdDeleteProject" Grid.Row="2" Style="{StaticResource SelectDialogItemGrid}">
+                            <BoxView Style="{StaticResource SelectOptionItemLeftBoxView}" />
+                            <Label
+                                Style="{StaticResource SelectOptionItemLabel}"
+                                Text="{StaticResource delete}"/>
+                            <BoxView Style="{StaticResource SelectOptionItemRightBoxView}" />
+                        </Grid>
                     </Grid>
 
                 </Grid>
