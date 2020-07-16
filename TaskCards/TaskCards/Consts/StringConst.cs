@@ -12,6 +12,7 @@
 		public const string WordSchedule = "スケジュール";
 		public const string WordTask = "タスク";
 		public const string WordProject = "プロジェクト";
+		public const string WordMyProject = "マイプロジェクト";
 		public const string WordMember = "メンバー";
 		public const string WordProgressRate = "進捗率";
 
@@ -55,7 +56,8 @@
 		public const string MessageDeleteConfirm = "削除したデータは元に戻せません。\nこの{0:s}を削除しますか？";
 		public const string MessageDeleteTaskProgressConfirm = "{0:s}\n\nこの作業記録を削除します。\nよろしいですか？";
 		public const string MessageFinishProjectConfirm = "このプロジェクトを終了します。\nよろしいですか？";
-		public const string MessageMyProjectError = "マイプロジェクトは{0:s}できません。";
+		public const string MessageMyProjectDescription = WordMyProject + "は自分専用の" + WordProject + "です。\n自分用の予定やタスク管理に利用することができます。";
+		public const string MessageMyProjectError = WordMyProject + "は{0:s}できません。";
 		public const string MessageRestartProjectSuccess = "プロジェクトを再開しました。";
 
 		// 固有メッセージ

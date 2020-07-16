@@ -65,16 +65,6 @@ namespace TaskCards.ViewModels {
 			var projectDao = new ProjectDao();
 			Project project = projectDao.GetProjectById(task.ProjectId);
 
-			var taskMemberDao = new TaskMemberDao();
-			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(id);
-
-			// 過去のタスク進捗をすべて取得
-			var taskProgressList = new List<TaskProgress>();
-			var taskProgressDao = new TaskProgressDao();
-			foreach (TaskMember taskMember in taskMemberList) {
-				taskProgressList.AddRange(taskProgressDao.GetTaskProgressListByTaskMemberId(taskMember.Id));
-			}
-
 			TopDateText = task.StartDate.ToString(StringConst.DateTappedDialogDateFormat);
 			ProjectText = project.Title;
 			TitleText = task.Title;
@@ -83,12 +73,16 @@ namespace TaskCards.ViewModels {
 			AddText = string.Format(StringConst.MessageAdd, "作業記録");
 			NotesText = task.Notes;
 
+			// タスクに紐づく、全タスク進捗リストを登録順で取得
+			var taskProgressDao = new TaskProgressDao();
+			List<TaskProgress> taskProgressList = taskProgressDao.GetOrderedTaskProgressListByTaskId(task.Id);
+
 			// 作業時間のグリッドに要素を追加
 			gdWorkTime.Children.Add(GetWorkTimeStackLayout(task, taskProgressList));
 			AddBlankTo3ItemsGrid(1, gdWorkTime);
 
 			// メンバーのグリッドに要素を追加
-			SetTaskMember(id, taskMemberList, taskProgressList, gdMember);
+			SetTaskMember(id, taskProgressList, gdMember);
 		}
 
 		/// <summary>
@@ -201,11 +195,12 @@ namespace TaskCards.ViewModels {
 		/// タスクのメンバーを設定する。
 		/// </summary>
 		/// <param name="taskId">タスクID</param>
-		/// <param name="taskMemberList">タスクメンバーリスト</param>
 		/// <param name="taskProgressList">タスク進捗リスト</param>
 		/// <param name="gdMember">メンバーのグリッド</param>
-		private void SetTaskMember(long taskId,
-			List<TaskMember> taskMemberList, List<TaskProgress> taskProgressList, Grid gdMember) {
+		private void SetTaskMember(long taskId, List<TaskProgress> taskProgressList, Grid gdMember) {
+
+			var taskMemberDao = new TaskMemberDao();
+			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(taskId);
 
 			var taskProgressMap = new Dictionary<long, List<TaskProgress>>();
 			taskProgressMap.Add(taskId, taskProgressList);

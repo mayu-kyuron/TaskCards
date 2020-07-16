@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
 using TaskCards.Entities;
@@ -64,17 +65,9 @@ namespace TaskCards.Pages {
 				(calenderBase.Content as StackLayout).Children.Last().HeightRequest = 450;
 			};
 
-			// TODO 仮のプロジェクトを追加
+			// 最初にマイプロジェクトを追加
 			long projectId = 1;
-			ProjectDao projectDao = new ProjectDao();
-			Project project = projectDao.GetProjectById(projectId);
-			if (project == null) {
-				Project myProject = new Project();
-				myProject.Id = projectId;
-				myProject.Title = "プロジェクトA";
-				myProject.ColorDiv = ColorDiv.スカイブルー;
-				projectDao.Insert(myProject);
-			}
+			InsertMyProjectAtFirst(projectId);
 
 			// TODO メンバーに仮の自分を追加
 			long memberId = 1;
@@ -201,6 +194,25 @@ namespace TaskCards.Pages {
 			// タスク追加用の入力ページに遷移
 			Application.Current.MainPage = new InputPage(CalendarViewModel.selectedDate,
 				TableDiv.タスク, PageDiv.カレンダー, ExecuteDiv.追加);
+		}
+
+		/// <summary>
+		/// 初回にマイプロジェクトを追加する。
+		/// </summary>
+		/// <param name="projectId">プロジェクトID</param>
+		private void InsertMyProjectAtFirst(long projectId) {
+
+			var projectDao = new ProjectDao();
+			if (projectDao.GetProjectById(projectId) != null) return;
+
+			projectDao.Insert(new Project {
+				Id = projectId,
+				Title = StringConst.WordMyProject,
+				ExpectedStartDate = DateTime.Today,
+				ExpectedEndDate = DateTime.Today.AddYears(100),
+				ColorDiv = ColorDiv.スカイブルー,
+				Notes = StringConst.MessageMyProjectDescription,
+			});
 		}
 
 		/// <summary>

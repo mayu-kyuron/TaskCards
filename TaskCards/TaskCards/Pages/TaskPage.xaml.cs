@@ -106,7 +106,8 @@ namespace TaskCards.Pages {
 
 			long taskId = long.Parse(((Grid)sender).ClassId);
 
-			TaskProgress lastTaskProgress = GetTaskProgressList(taskId).LastOrDefault();
+			var taskProgressDao = new TaskProgressDao();
+			TaskProgress lastTaskProgress = taskProgressDao.GetOrderedTaskProgressListByTaskId(taskId).LastOrDefault();
 			if (lastTaskProgress == null) return;
 
 			// 作業記録削除の確認ダイアログを表示
@@ -479,26 +480,28 @@ namespace TaskCards.Pages {
 				ClassId = task.Id.ToString(),
 			};
 
-			int index = 0;
-			var orderedTaskProgressList = GetTaskProgressList(task.Id);
+			// タスクに紐づく、全タスク進捗リストを登録順で取得
+			var taskProgressDao = new TaskProgressDao();
+			List<TaskProgress> taskProgressList = taskProgressDao.GetOrderedTaskProgressListByTaskId(task.Id);
 
+			int index = 0;
 			TaskProgress lastTaskProgress = null;
 			bool isOdd = true;
-			foreach (TaskProgress entity in orderedTaskProgressList) {
+			foreach (TaskProgress taskProgress in taskProgressList) {
 
 				// 進捗率が前回より下回っている場合は、何もしない。
 				if (lastTaskProgress != null) {
-					if (entity.ProgressRate <= lastTaskProgress.ProgressRate) continue;
+					if (taskProgress.ProgressRate <= lastTaskProgress.ProgressRate) continue;
 				}
 
 				int columnNum = (lastTaskProgress == null) ?
-					(int)entity.ProgressRate : (int)(entity.ProgressRate - lastTaskProgress.ProgressRate);
+					(int)taskProgress.ProgressRate : (int)(taskProgress.ProgressRate - lastTaskProgress.ProgressRate);
 
 				// グリッドに項目を追加
-				grid.Children.Add(GetTaskProgressLabel(project, entity, isOdd), index, index + columnNum, 0, 1);
+				grid.Children.Add(GetTaskProgressLabel(project, taskProgress, isOdd), index, index + columnNum, 0, 1);
 
 				index += columnNum;
-				lastTaskProgress = entity;
+				lastTaskProgress = taskProgress;
 				isOdd = isOdd ? false : true;
 			}
 
@@ -506,28 +509,6 @@ namespace TaskCards.Pages {
 			if (index < 100) grid.Children.Add(new BoxView(), index, index + (100 - index), 0, 1);
 
 			return grid;
-		}
-
-		/// <summary>
-		/// タスク進捗リスト（並べ替え済）を取得する。
-		/// </summary>
-		/// <param name="taskId">タスクID</param>
-		/// <returns>タスク進捗リスト</returns>
-		private IOrderedEnumerable<TaskProgress> GetTaskProgressList(long taskId) {
-
-			var taskMemberDao = new TaskMemberDao();
-			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(taskId);
-
-			var taskProgressDao = new TaskProgressDao();
-
-			// 過去のタスク進捗をすべて取得
-			var taskProgressList = new List<TaskProgress>();
-			foreach (TaskMember taskMember in taskMemberList) {
-				taskProgressList.AddRange(taskProgressDao.GetTaskProgressListByTaskMemberId(taskMember.Id));
-			}
-
-			// 登録順に並び替え
-			return taskProgressList.OrderBy(e => e.RegisterOrder);
 		}
 
 		/// <summary>
@@ -578,14 +559,8 @@ namespace TaskCards.Pages {
 			var taskProgressDao = new TaskProgressDao();
 			taskProgressDao.Delete(taskProgress.Id);
 
-			var taskMemberDao = new TaskMemberDao();
-			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(task.Id);
-
-			// 過去のタスク進捗をすべて取得
-			var taskProgressList = new List<TaskProgress>();
-			foreach (TaskMember taskMember in taskMemberList) {
-				taskProgressList.AddRange(taskProgressDao.GetTaskProgressListByTaskMemberId(taskMember.Id));
-			}
+			// タスクに紐づく、全タスク進捗リストを登録順で取得
+			List<TaskProgress> taskProgressList = taskProgressDao.GetOrderedTaskProgressListByTaskId(task.Id);
 
 			// 過去の作業時間を加算し、現時点の総作業時間を取得
 			var totalWorkTime = new TimeSpan(0, 0, 0);
@@ -594,7 +569,7 @@ namespace TaskCards.Pages {
 			}
 
 			// 前前回のタスク進捗を取得
-			TaskProgress lastTaskProgress = GetTaskProgressList(task.Id).LastOrDefault();
+			TaskProgress lastTaskProgress = taskProgressList.LastOrDefault();
 
 			// タスクを更新
 			var taskDao = new TaskDao();

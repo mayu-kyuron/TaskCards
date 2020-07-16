@@ -1,6 +1,7 @@
 ﻿using Acr.UserDialogs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TaskCards.Consts;
 using TaskCards.Dao;
 using TaskCards.Divisions;
@@ -227,27 +228,22 @@ namespace TaskCards.Pages {
 		/// </summary>
 		private void InsertTaskProgressAndUpdateTask() {
 
-			long taskMemberId = 0;
-			int registerOrder = 0;
-
 			var taskDao = new TaskDao();
 			Task task = taskDao.GetTaskById(this.taskId);
 
 			var taskMemberDao = new TaskMemberDao();
 			List<TaskMember> taskMemberList = taskMemberDao.GetTaskMemberListByTaskId(this.taskId);
 
-			// 過去のタスク進捗をすべて取得
-			var taskProgressList = new List<TaskProgress>();
-			var taskProgressDao = new TaskProgressDao();
-			foreach (TaskMember taskMember in taskMemberList) {
-				taskProgressList.AddRange(taskProgressDao.GetTaskProgressListByTaskMemberId(taskMember.Id));
+			// TODO 仮のメンバーを初期選択に
+			TaskMember taskMember = taskMemberList.FirstOrDefault(v => v.MemberId == 1);
+			if (taskMember == null) return;
 
-				// TODO 仮のメンバーを初期選択に
-				if (taskMember.MemberId == 1) taskMemberId = taskMember.Id;
-			}
-			if (taskMemberId == 0) return;
+			// タスクに紐づく、全タスク進捗リストを登録順で取得
+			var taskProgressDao = new TaskProgressDao();
+			List<TaskProgress> taskProgressList = taskProgressDao.GetOrderedTaskProgressListByTaskId(task.Id);
 
 			// 過去の作業時間を加算し、現時点の総作業時間を取得
+			int registerOrder = 0;
 			TimeSpan totalWorkTime = new TimeSpan(0, 0, 0);
 			foreach (TaskProgress pastTaskProgress in taskProgressList) {
 				totalWorkTime += (pastTaskProgress.EndDate - pastTaskProgress.StartDate);
@@ -265,7 +261,7 @@ namespace TaskCards.Pages {
 
 			// タスク進捗を追加
 			var taskProgress = new TaskProgress {
-				TaskMemberId = taskMemberId,
+				TaskMemberId = taskMember.Id,
 				RegisterOrder = registerOrder + 1,
 				ProgressRate = double.Parse(this.viewModel.ProgressRateText),
 				StartDate = DateTime.Now.Date + this.viewModel.StartTime,
