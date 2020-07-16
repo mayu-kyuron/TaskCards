@@ -409,7 +409,7 @@ namespace TaskCards.ViewModels {
 
 			// プロジェクトカラーのボックスビューを生成
 			var colorBoxView = new BoxView {
-				BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv),
+				BackgroundColor = LayoutUtility.GetColorByEndDate(project),
 			};
 
 			string text = project.Title;

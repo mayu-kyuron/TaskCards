@@ -198,7 +198,7 @@ namespace TaskCards.ViewModels {
 
 			// タイトルのカラーボックスビューを生成
 			var titleBoxView = new BoxView {
-				BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv),
+				BackgroundColor = LayoutUtility.GetColorByEndDate(project),
 			};
 
 			string text = baseEvent.Title;

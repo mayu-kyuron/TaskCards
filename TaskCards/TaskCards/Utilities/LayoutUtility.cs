@@ -1,4 +1,6 @@
-﻿using TaskCards.Divisions;
+﻿using System;
+using TaskCards.Divisions;
+using TaskCards.Entities;
 using Xamarin.Forms;
 
 namespace TaskCards.Utilities {
@@ -67,6 +69,36 @@ namespace TaskCards.Utilities {
 					return Color.FromHex("#E9C3E9");
 				default:
 					return Color.FromHex("#B0DFF1");
+			}
+		}
+
+		/// <summary>
+		/// プロジェクトの終了日によって表示するカラーを取得する。
+		/// </summary>
+		/// <param name="project">プロジェクトデータ</param>
+		/// <returns>カラー</returns>
+		public static Color GetColorByEndDate(Project project) {
+
+			if (project.EndDate.Equals(DateTime.MinValue)) {
+				return GetColorByColorDiv(project.ColorDiv);
+			}
+			else {
+				return Color.Silver;
+			}
+		}
+
+		/// <summary>
+		/// プロジェクトの終了日によって表示するカラーを薄めた色を取得する。
+		/// </summary>
+		/// <param name="project">プロジェクトデータ</param>
+		/// <returns>カラーを薄めた色</returns>
+		public static Color GetLightColorByEndDate(Project project) {
+
+			if (project.EndDate.Equals(DateTime.MinValue)) {
+				return GetLightColorByColorDiv(project.ColorDiv);
+			}
+			else {
+				return Color.LightGray;
 			}
 		}
 

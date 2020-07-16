@@ -199,7 +199,7 @@ namespace TaskCards.Pages {
 				ColumnSpacing = 0,
 				RowSpacing = 0,
 				HeightRequest = this.viewModel.GetProjectGridHeight(Height, taskList.Count),
-				BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv),
+				BackgroundColor = LayoutUtility.GetColorByEndDate(project),
 			};
 
 			// タイトル用グリッドを生成
@@ -307,7 +307,7 @@ namespace TaskCards.Pages {
 			if (taskList.Count == 0) whiteGrid.Children.Add(GetNoTaskGrid());
 
 			// 下部ボーダー用ビューを生成
-			var bottomBorderView = new BoxView { BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv) };
+			var bottomBorderView = new BoxView { BackgroundColor = LayoutUtility.GetColorByEndDate(project) };
 
 			int whiteGridRowNum = (int)Math.Round(
 				this.viewModel.GetTasksGridHeight(Height, taskList.Count) / borderWidth, 0, MidpointRounding.AwayFromZero);
@@ -545,8 +545,7 @@ namespace TaskCards.Pages {
 			TaskMember taskMember = taskMemberDao.GetTaskMemberById(taskProgress.TaskMemberId);
 
 			// 並べ順に交互に背景色を変える。
-			Color backgroundColor = isOdd ? LayoutUtility.GetColorByColorDiv(project.ColorDiv)
-				: LayoutUtility.GetLightColorByColorDiv(project.ColorDiv);
+			Color backgroundColor = isOdd ? LayoutUtility.GetColorByEndDate(project) : LayoutUtility.GetLightColorByEndDate(project);
 
 			return new Label {
 				Text = " " + memberDao.GetMemberById(taskMember.MemberId).Name,

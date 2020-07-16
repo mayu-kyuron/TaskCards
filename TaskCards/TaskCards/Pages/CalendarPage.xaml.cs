@@ -482,12 +482,12 @@ namespace TaskCards.Pages {
 
 			// スケジュールの場合
 			if (baseEvent.GetType() == typeof(Schedule)) {
-				label.TextColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+				label.TextColor = LayoutUtility.GetColorByEndDate(project);
 			}
 			// タスクの場合
 			else if (baseEvent.GetType() == typeof(Task)) {
 				label.TextColor = Color.White;
-				label.BackgroundColor = LayoutUtility.GetColorByColorDiv(project.ColorDiv);
+				label.BackgroundColor = LayoutUtility.GetColorByEndDate(project);
 				label.Opacity = 0.9;
 			}
 

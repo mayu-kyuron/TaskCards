@@ -57,8 +57,8 @@ namespace TaskCards.Dao {
 				entityList.Add(entity);
 			}
 
-			// 予定開始日の降順に並び替える。
-			entityList = entityList.OrderByDescending(v => v.ExpectedStartDate).ToList();
+			// 終了していないプロジェクトを前にしたあと、予定開始日の降順に並び替える。
+			entityList = entityList.OrderBy(v => v.EndDate).ThenByDescending(v => v.ExpectedStartDate).ToList();
 
 			// マイプロジェクトを先頭に入れ替える。
 			if (entityList.Exists(v => v.Id == 1)) {
